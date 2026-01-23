@@ -13,6 +13,7 @@
         "total": "Всего",
         "empty": "Атрибуты не найдены",
         "toggleFilterable": "Кликните для переключения",
+        "clearSelection": "Снять выделение",
         "placeholders": {
           "search": "Поиск по имени...",
           "allCatalogs": "— Все каталоги —",

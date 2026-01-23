@@ -13,6 +13,7 @@
         "total": "Total",
         "empty": "No attributes found",
         "toggleFilterable": "Click to toggle",
+        "clearSelection": "Clear selection",
         "placeholders": {
           "search": "Search by name...",
           "allCatalogs": "— All catalogs —",

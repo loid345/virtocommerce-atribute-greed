@@ -35,6 +35,13 @@ angular.module('VirtoCommerce.AttributeGrid')
                 updateSelectedItems();
             };
 
+            $scope.clearSelection = function () {
+                angular.forEach(blade.currentEntities, function (item) {
+                    item.$selected = false;
+                });
+                updateSelectedItems();
+            };
+
             $scope.toggleSelect = function (item, $event) {
                 if ($event) {
                     $event.stopPropagation();
