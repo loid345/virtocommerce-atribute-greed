@@ -9,6 +9,8 @@ using VirtoCommerce.Platform.Data.MySql.Extensions;
 using VirtoCommerce.Platform.Data.PostgreSql.Extensions;
 using VirtoCommerce.Platform.Data.SqlServer.Extensions;
 using VirtoCommerce.AttributeGrid.Core;
+using VirtoCommerce.AttributeGrid.Core.Services;
+using VirtoCommerce.AttributeGrid.Data.Services;
 using VirtoCommerce.AttributeGrid.Data.MySql;
 using VirtoCommerce.AttributeGrid.Data.PostgreSql;
 using VirtoCommerce.AttributeGrid.Data.Repositories;
@@ -47,7 +49,7 @@ public class Module : IModule, IHasConfiguration
         //AbstractTypeFactory<OriginalEntity>.OverrideType<OriginalEntity, ExtendedEntity>();
 
         // Register services
-        //serviceCollection.AddTransient<IMyService, MyService>();
+        serviceCollection.AddTransient<IPropertyManagerService, PropertyManagerService>();
     }
 
     public void PostInitialize(IApplicationBuilder appBuilder)
