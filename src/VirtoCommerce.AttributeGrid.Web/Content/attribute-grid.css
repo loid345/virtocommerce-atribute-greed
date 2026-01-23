@@ -32,6 +32,46 @@
   border-radius: 4px;
 }
 
+.attribute-grid__catalog-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.attribute-grid__catalog-input {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  background: #fff;
+}
+
+.attribute-grid__catalog-placeholder {
+  color: #999;
+}
+
+.attribute-grid__catalog-name {
+  font-weight: 600;
+}
+
+.attribute-grid__catalog-button {
+  border: 1px solid #d7d7d7;
+  border-radius: 4px;
+  background: #f7f7f7;
+  padding: 6px 10px;
+}
+
+.attribute-grid__catalog-clear {
+  position: absolute;
+  right: 38px;
+  border: none;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+}
+
 .attribute-grid__table td,
 .attribute-grid__table th {
   vertical-align: middle;
