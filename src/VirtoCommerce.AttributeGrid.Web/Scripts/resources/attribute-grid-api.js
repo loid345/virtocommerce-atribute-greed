@@ -6,5 +6,7 @@ angular.module('VirtoCommerce.AttributeGrid')
             remove: { method: 'DELETE' },
             getTrash: { method: 'GET', url: 'api/attribute-grid/trash', isArray: true },
             restore: { method: 'POST', url: 'api/attribute-grid/trash/:id/restore' },
+            bulkUpdate: { method: 'POST', url: 'api/attribute-grid/bulk/update' },
+            bulkDelete: { method: 'POST', url: 'api/attribute-grid/bulk/delete' },
         });
     }]);

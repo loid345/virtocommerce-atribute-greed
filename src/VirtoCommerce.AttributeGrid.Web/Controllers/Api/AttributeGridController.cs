@@ -190,6 +190,48 @@ public class AttributeGridController : Controller
         return NoContent();
     }
 
+    /// <summary>
+    /// Bulk update property flags.
+    /// </summary>
+    [HttpPost]
+    [Route("bulk/update")]
+    [Authorize(Permissions.Update)]
+    public async Task<ActionResult> BulkUpdate([FromBody] BulkUpdateRequest request)
+    {
+        if (request?.Ids == null || request.Ids.Count == 0)
+        {
+            return Ok(new { updated = 0 });
+        }
+
+        foreach (var id in request.Ids)
+        {
+            await _propertyManagerService.UpdatePropertyAsync(id, request.IsFilterable, request.IsRequired);
+        }
+
+        return Ok(new { updated = request.Ids.Count });
+    }
+
+    /// <summary>
+    /// Bulk move properties to trash.
+    /// </summary>
+    [HttpPost]
+    [Route("bulk/delete")]
+    [Authorize(Permissions.Delete)]
+    public async Task<ActionResult> BulkDelete([FromBody] BulkDeleteRequest request)
+    {
+        if (request?.Ids == null || request.Ids.Count == 0)
+        {
+            return Ok(new { deleted = 0 });
+        }
+
+        foreach (var id in request.Ids)
+        {
+            await _propertyTrashService.MoveToTrashAsync(id, User?.Identity?.Name);
+        }
+
+        return Ok(new { deleted = request.Ids.Count });
+    }
+
     [HttpGet]
     [Route("trash")]
     [Authorize(Permissions.Read)]
@@ -245,4 +287,16 @@ public class PropertyUpdateRequest
 {
     public bool? IsFilterable { get; set; }
     public bool? IsRequired { get; set; }
+}
+
+public class BulkUpdateRequest
+{
+    public List<string> Ids { get; set; } = new();
+    public bool? IsFilterable { get; set; }
+    public bool? IsRequired { get; set; }
+}
+
+public class BulkDeleteRequest
+{
+    public List<string> Ids { get; set; } = new();
 }
