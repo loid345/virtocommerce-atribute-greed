@@ -3,16 +3,16 @@
     <div class="inner-block">
       <div ng-if="!blade.currentEntities.length" class="text-center" style="padding: 40px;">
         <i class="fa fa-trash-o fa-3x text-muted"></i>
-        <p class="text-muted" style="margin-top: 10px;">Trash is empty</p>
+        <p class="text-muted" style="margin-top: 10px;">{{ 'AttributeGrid.blades.trash.empty' | translate }}</p>
       </div>
 
       <table class="table table-hover" ng-if="blade.currentEntities.length">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Deleted</th>
-            <th>By</th>
-            <th>Expires</th>
+            <th>{{ 'AttributeGrid.blades.trash.columns.name' | translate }}</th>
+            <th>{{ 'AttributeGrid.blades.trash.columns.deleted' | translate }}</th>
+            <th>{{ 'AttributeGrid.blades.trash.columns.deletedBy' | translate }}</th>
+            <th>{{ 'AttributeGrid.blades.trash.columns.expires' | translate }}</th>
             <th style="width: 120px;"></th>
           </tr>
         </thead>
@@ -25,7 +25,7 @@
             <td>
               <button class="btn btn-sm btn-success" ng-click="restore(item)">
                 <i class="fa fa-undo"></i>
-                Restore
+                {{ 'AttributeGrid.blades.trash.restore' | translate }}
               </button>
             </td>
           </tr>

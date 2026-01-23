@@ -78,7 +78,9 @@ angular.module('VirtoCommerce.AttributeGrid')
                     updateSelectedItems();
                 }, function (error) {
                     blade.isLoading = false;
-                    bladeNavigationService.setError('Ошибка загрузки: ' + error.status, blade);
+                    bladeNavigationService.setError(
+                        $translate.instant('AttributeGrid.messages.loadError', { status: error.status }),
+                        blade);
                 });
             };
 
@@ -122,7 +124,9 @@ angular.module('VirtoCommerce.AttributeGrid')
                                 blade.refresh();
                             }, function (error) {
                                 blade.isLoading = false;
-                                bladeNavigationService.setError('Ошибка удаления: ' + error.status, blade);
+                                bladeNavigationService.setError(
+                                    $translate.instant('AttributeGrid.messages.deleteError', { status: error.status }),
+                                    blade);
                             });
                         }
                     },
@@ -185,7 +189,9 @@ angular.module('VirtoCommerce.AttributeGrid')
                             blade.refresh();
                         }, function (error) {
                             blade.isLoading = false;
-                            bladeNavigationService.setError('Ошибка удаления: ' + error.status, blade);
+                            bladeNavigationService.setError(
+                                $translate.instant('AttributeGrid.messages.deleteError', { status: error.status }),
+                                blade);
                         });
                     },
                 };
