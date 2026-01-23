@@ -3,6 +3,63 @@
     "blades": {
       "attribute-grid": {
         "title": "Attribute Grid"
+      },
+      "list": {
+        "title": "Attribute Manager",
+        "selected": "Selected",
+        "total": "Total",
+        "empty": "No attributes found",
+        "toggleFilterable": "Click to toggle",
+        "placeholders": {
+          "search": "Search by name...",
+          "allCatalogs": "— All catalogs —",
+          "allTypes": "— All types —"
+        },
+        "valueTypes": {
+          "shortText": "Text",
+          "longText": "Long text",
+          "number": "Number",
+          "dateTime": "Date",
+          "boolean": "Yes/No"
+        },
+        "columns": {
+          "name": "Name",
+          "type": "Type",
+          "owner": "Owner",
+          "filterable": "Filter",
+          "dictionary": "Dictionary",
+          "usage": "Usage"
+        }
+      },
+      "detail": {
+        "title": "Edit Attribute",
+        "newTitle": "New Attribute"
+      },
+      "trash": {
+        "title": "Trash",
+        "subtitle": "Deleted attributes"
+      }
+    },
+    "commands": {
+      "enableFilter": "Enable filter",
+      "disableFilter": "Disable filter",
+      "enableRequired": "Set required",
+      "disableRequired": "Clear required",
+      "deleteSelected": "Move to trash",
+      "trash": "Trash"
+    },
+    "dialogs": {
+      "delete": {
+        "title": "Delete attribute",
+        "message": "Move \"{{name}}\" to trash?"
+      },
+      "bulkUpdate": {
+        "title": "Bulk update",
+        "message": "Apply changes to selected attributes?"
+      },
+      "bulkDelete": {
+        "title": "Bulk delete",
+        "message": "Move {{count}} attributes to trash?"
       }
     }
   },

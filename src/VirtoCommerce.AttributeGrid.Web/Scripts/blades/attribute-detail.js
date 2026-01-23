@@ -3,13 +3,28 @@ angular.module('VirtoCommerce.AttributeGrid')
         '$scope',
         'VirtoCommerce.AttributeGrid.webApi',
         'platformWebApp.bladeNavigationService',
-        function ($scope, api, bladeNavigationService) {
+        '$translate',
+        function ($scope, api, bladeNavigationService, $translate) {
             var blade = $scope.blade;
             blade.headIcon = 'fa fa-tag';
             blade.updatePermission = 'attribute-grid:update';
+            blade.createPermission = 'attribute-grid:create';
+            blade.isNew = !blade.currentEntityId;
 
             blade.refresh = function () {
                 if (!blade.currentEntityId) {
+                    blade.title = $translate.instant('AttributeGrid.blades.detail.newTitle');
+                    blade.currentEntity = {
+                        name: '',
+                        code: '',
+                        valueType: 'ShortText',
+                        propertyType: 'Product',
+                        isFilterable: false,
+                        isRequired: false,
+                        isDictionary: false,
+                        isMultivalue: false,
+                    };
+                    blade.origEntity = angular.copy(blade.currentEntity);
                     return;
                 }
 
@@ -18,6 +33,7 @@ angular.module('VirtoCommerce.AttributeGrid')
                     blade.currentEntity = data;
                     blade.origEntity = angular.copy(data);
                     blade.title = data.name;
+                    blade.isNew = false;
                     blade.isLoading = false;
                 }, function () {
                     blade.isLoading = false;
@@ -30,12 +46,19 @@ angular.module('VirtoCommerce.AttributeGrid')
 
             $scope.saveChanges = function () {
                 blade.isLoading = true;
-                var updateData = {
-                    isFilterable: blade.currentEntity.isFilterable,
-                    isRequired: blade.currentEntity.isRequired,
-                };
+                if (!blade.currentEntity.code) {
+                    blade.currentEntity.code = blade.currentEntity.name;
+                }
 
-                api.update({ id: blade.currentEntityId }, updateData, function () {
+                if (!blade.currentEntity.id && blade.currentEntityId) {
+                    blade.currentEntity.id = blade.currentEntityId;
+                }
+
+                api.save(blade.currentEntity, function (data) {
+                    blade.currentEntity = data;
+                    blade.currentEntityId = data.id;
+                    blade.isNew = false;
+                    blade.title = data.name;
                     blade.origEntity = angular.copy(blade.currentEntity);
                     blade.isLoading = false;
                     if (blade.parentBlade && blade.parentBlade.refresh) {
@@ -56,7 +79,7 @@ angular.module('VirtoCommerce.AttributeGrid')
                     icon: 'fa fa-save',
                     executeMethod: $scope.saveChanges,
                     canExecuteMethod: $scope.isDirty,
-                    permission: blade.updatePermission,
+                    permission: blade.isNew ? blade.createPermission : blade.updatePermission,
                 },
                 {
                     name: 'platform.commands.reset',

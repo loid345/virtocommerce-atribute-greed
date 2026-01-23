@@ -4,12 +4,13 @@ angular.module('VirtoCommerce.AttributeGrid')
         'VirtoCommerce.AttributeGrid.webApi',
         'platformWebApp.bladeNavigationService',
         'platformWebApp.dialogService',
+        '$translate',
         'virtoCommerce.catalogModule.catalogs',
-        function ($scope, api, bladeNavigationService, dialogService, catalogsResource) {
+        function ($scope, api, bladeNavigationService, dialogService, $translate, catalogsResource) {
             var blade = $scope.blade;
-            blade.title = 'Менеджер Атрибутов';
+            blade.title = $translate.instant('AttributeGrid.blades.list.title');
             blade.headIcon = 'fa fa-tags';
-            blade.updatePermission = 'propertiesManager:update';
+            blade.updatePermission = 'attribute-grid:update';
 
             $scope.filter = {
                 keyword: '',
@@ -87,7 +88,7 @@ angular.module('VirtoCommerce.AttributeGrid')
                 var detailBlade = {
                     id: 'attributeDetail',
                     title: item.name,
-                    subtitle: 'Редактирование атрибута',
+                    subtitle: $translate.instant('AttributeGrid.blades.detail.title'),
                     controller: 'VirtoCommerce.AttributeGrid.attributeDetailController',
                     template: 'Modules/$(VirtoCommerce.AttributeGrid)/Scripts/blades/attribute-detail.html',
                     currentEntityId: item.id,
@@ -98,8 +99,8 @@ angular.module('VirtoCommerce.AttributeGrid')
             function openTrash() {
                 var trashBlade = {
                     id: 'attributeTrash',
-                    title: 'Корзина',
-                    subtitle: 'Удалённые атрибуты',
+                    title: $translate.instant('AttributeGrid.blades.trash.title'),
+                    subtitle: $translate.instant('AttributeGrid.blades.trash.subtitle'),
                     controller: 'VirtoCommerce.AttributeGrid.attributeTrashListController',
                     template: 'Modules/$(VirtoCommerce.AttributeGrid)/Scripts/blades/attribute-trash-list.html',
                 };
@@ -108,15 +109,20 @@ angular.module('VirtoCommerce.AttributeGrid')
             }
 
             $scope.deleteItem = function (item) {
+                var title = $translate.instant('AttributeGrid.dialogs.delete.title');
+                var message = $translate.instant('AttributeGrid.dialogs.delete.message', { name: item.name });
                 var dialog = {
                     id: 'confirmDelete',
-                    title: 'Удаление атрибута',
-                    message: 'Удалить атрибут "' + item.name + '" в корзину?',
+                    title: title,
+                    message: message,
                     callback: function (confirmed) {
                         if (confirmed) {
                             blade.isLoading = true;
-                            api.remove({ id: item.id }, function () {
+                            api.moveToTrash([item.id], function () {
                                 blade.refresh();
+                            }, function (error) {
+                                blade.isLoading = false;
+                                bladeNavigationService.setError('Ошибка удаления: ' + error.status, blade);
                             });
                         }
                     },
@@ -136,8 +142,8 @@ angular.module('VirtoCommerce.AttributeGrid')
 
                 var dialog = {
                     id: 'confirmBulkUpdate',
-                    title: 'Массовое обновление',
-                    message: 'Применить изменения к выбранным атрибутам?',
+                    title: $translate.instant('AttributeGrid.dialogs.bulkUpdate.title'),
+                    message: $translate.instant('AttributeGrid.dialogs.bulkUpdate.message'),
                     callback: function (confirmed) {
                         if (!confirmed) {
                             return;
@@ -145,7 +151,7 @@ angular.module('VirtoCommerce.AttributeGrid')
 
                         blade.isLoading = true;
                         api.bulkUpdate({
-                            ids: ids,
+                            propertyIds: ids,
                             isFilterable: updatePayload.isFilterable,
                             isRequired: updatePayload.isRequired,
                         }, function () {
@@ -163,18 +169,23 @@ angular.module('VirtoCommerce.AttributeGrid')
                     return;
                 }
 
+                var title = $translate.instant('AttributeGrid.dialogs.bulkDelete.title');
+                var message = $translate.instant('AttributeGrid.dialogs.bulkDelete.message', { count: ids.length });
                 var dialog = {
                     id: 'confirmBulkDelete',
-                    title: 'Массовое удаление',
-                    message: 'Удалить выбранные атрибуты в корзину?',
+                    title: title,
+                    message: message,
                     callback: function (confirmed) {
                         if (!confirmed) {
                             return;
                         }
 
                         blade.isLoading = true;
-                        api.bulkDelete({ ids: ids }, function () {
+                        api.bulkDelete({ propertyIds: ids }, function () {
                             blade.refresh();
+                        }, function (error) {
+                            blade.isLoading = false;
+                            bladeNavigationService.setError('Ошибка удаления: ' + error.status, blade);
                         });
                     },
                 };
@@ -194,13 +205,29 @@ angular.module('VirtoCommerce.AttributeGrid')
 
             blade.toolbarCommands = [
                 {
+                    name: 'platform.commands.add',
+                    icon: 'fa fa-plus',
+                    executeMethod: function () {
+                        var newBlade = {
+                            id: 'attributeDetailNew',
+                            title: $translate.instant('AttributeGrid.blades.detail.newTitle'),
+                            controller: 'VirtoCommerce.AttributeGrid.attributeDetailController',
+                            template: 'Modules/$(VirtoCommerce.AttributeGrid)/Scripts/blades/attribute-detail.html',
+                            currentEntityId: null,
+                        };
+                        bladeNavigationService.showBlade(newBlade, blade);
+                    },
+                    canExecuteMethod: function () { return true; },
+                    permission: 'attribute-grid:create',
+                },
+                {
                     name: 'platform.commands.refresh',
                     icon: 'fa fa-refresh',
                     executeMethod: blade.refresh,
                     canExecuteMethod: function () { return !blade.isLoading; },
                 },
                 {
-                    name: 'Корзина',
+                    name: 'AttributeGrid.commands.trash',
                     icon: 'fa fa-trash-o',
                     executeMethod: openTrash,
                     canExecuteMethod: function () { return true; },

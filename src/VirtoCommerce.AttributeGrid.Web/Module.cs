@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Hangfire;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Settings;
@@ -11,6 +12,7 @@ using VirtoCommerce.Platform.Data.PostgreSql.Extensions;
 using VirtoCommerce.Platform.Data.SqlServer.Extensions;
 using VirtoCommerce.AttributeGrid.Core;
 using VirtoCommerce.AttributeGrid.Core.Services;
+using VirtoCommerce.AttributeGrid.Data.BackgroundJobs;
 using VirtoCommerce.AttributeGrid.Data.Services;
 using VirtoCommerce.AttributeGrid.Data.MySql;
 using VirtoCommerce.AttributeGrid.Data.PostgreSql;
@@ -68,6 +70,12 @@ public class Module : IModule, IHasConfiguration
         // Register permissions
         var permissionsRegistrar = serviceProvider.GetRequiredService<IPermissionsRegistrar>();
         permissionsRegistrar.RegisterPermissions(ModuleInfo.Id, "AttributeGrid", ModuleConstants.Security.Permissions.AllPermissions);
+
+        var recurringJobManager = serviceProvider.GetRequiredService<IRecurringJobManager>();
+        recurringJobManager.AddOrUpdate<TrashCleanupJob>(
+            "AttributeGrid-TrashCleanup",
+            job => job.Process(),
+            Cron.Daily);
 
         // Apply migrations
         using var serviceScope = serviceProvider.CreateScope();
