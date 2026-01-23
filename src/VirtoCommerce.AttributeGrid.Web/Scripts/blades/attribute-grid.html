@@ -3,6 +3,12 @@
     <div class="inner-block attribute-grid">
       <div class="attribute-grid__header">
         <h2 class="attribute-grid__title">Attributes</h2>
+        <div class="attribute-grid__actions">
+          <button class="btn" type="button" ng-click="blade.refresh()">
+            <i class="fa fa-refresh"></i>
+            Refresh
+          </button>
+        </div>
       </div>
 
       <div class="attribute-grid__filters">
@@ -56,7 +62,7 @@
               <span ng-if="item.isRequired">✓</span>
               <span ng-if="!item.isRequired">—</span>
             </td>
-            <td>{{item.usageCount}}</td>
+            <td>{{item.usageCount}} items</td>
           </tr>
           <tr ng-if="!blade.currentEntities.length">
             <td colspan="8">No attributes found.</td>
