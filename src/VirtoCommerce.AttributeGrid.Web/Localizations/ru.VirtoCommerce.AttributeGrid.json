@@ -1,5 +1,8 @@
 {
   "AttributeGrid": {
+    "mainMenu": {
+      "title": "Менеджер атрибутов"
+    },
     "blades": {
       "attribute-grid": {
         "title": "Менеджер атрибутов"
@@ -29,15 +32,54 @@
           "filterable": "Фильтр",
           "dictionary": "Словарь",
           "usage": "Исп."
-        }
+        },
+        "multivalue": "Множественный"
       },
       "detail": {
         "title": "Редактирование атрибута",
-        "newTitle": "Новый атрибут"
+        "newTitle": "Новый атрибут",
+        "labels": {
+          "name": "Имя",
+          "code": "Код",
+          "type": "Тип",
+          "owner": "Владелец",
+          "scope": "Область",
+          "filterable": "Показывать в фильтрах",
+          "filterableValue": "Фильтруемый",
+          "required": "Обязательный",
+          "requiredValue": "Обязательный",
+          "multivalue": "Множественный",
+          "usage": "Использование",
+          "items": "элементов"
+        },
+        "placeholders": {
+          "name": "Введите имя атрибута",
+          "code": "Код (если пусто — будет как Имя)"
+        },
+        "valueTypes": {
+          "shortText": "Короткий текст",
+          "longText": "Длинный текст",
+          "number": "Число",
+          "dateTime": "Дата",
+          "boolean": "Да/Нет"
+        },
+        "scopes": {
+          "product": "Товар",
+          "category": "Категория",
+          "catalog": "Каталог"
+        }
       },
       "trash": {
         "title": "Корзина",
-        "subtitle": "Удалённые атрибуты"
+        "subtitle": "Удалённые атрибуты",
+        "empty": "Корзина пуста",
+        "restore": "Восстановить",
+        "columns": {
+          "name": "Имя",
+          "deleted": "Удалено",
+          "deletedBy": "Кем",
+          "expires": "Истекает"
+        }
       }
     },
     "commands": {
@@ -61,6 +103,16 @@
         "title": "Массовое удаление",
         "message": "Удалить {{count}} атрибутов в корзину?"
       }
+    },
+    "messages": {
+      "codeExists": "Код атрибута \"{{code}}\" уже существует.",
+      "saveError": "Ошибка сохранения: {{status}}",
+      "loadError": "Ошибка загрузки: {{status}}",
+      "deleteError": "Ошибка удаления: {{status}}"
+    },
+    "common": {
+      "yes": "Да",
+      "no": "Нет"
     }
   },
   "permissions": {
