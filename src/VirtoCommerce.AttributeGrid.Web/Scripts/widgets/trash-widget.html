@@ -1,0 +1,11 @@
+<div class="widget" ng-click="openTrash()" style="cursor: pointer;">
+  <div class="widget-icon">
+    <i class="fa fa-trash-o"></i>
+  </div>
+  <div class="widget-info">
+    <span class="widget-count" ng-class="{'text-warning': trashCount > 0}">
+      {{trashCount}}
+    </span>
+    <span class="widget-title">{{ 'AttributeGrid.widgets.trash.title' | translate }}</span>
+  </div>
+</div>

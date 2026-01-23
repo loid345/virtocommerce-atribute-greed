@@ -7,6 +7,7 @@
     <SonarQubeTestProject>false</SonarQubeTestProject>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.102.3" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="VirtoCommerce.CatalogModule.Core" Version="{CatalogVersion}" />
     <PackageReference Include="VirtoCommerce.Platform.Data" Version="{PlatformVersion}" />

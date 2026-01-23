@@ -27,8 +27,8 @@ angular.module(moduleName, ['virtoCommerce.catalogModule'])
                 });
         }
     ])
-    .run(['platformWebApp.mainMenuService', '$state', '$translate',
-        function (mainMenuService, $state, $translate) {
+    .run(['platformWebApp.mainMenuService', 'platformWebApp.widgetService', '$state', '$translate',
+        function (mainMenuService, widgetService, $state, $translate) {
             //Register module in main menu
             var menuItem = {
                 path: 'browse/attribute-grid',
@@ -39,5 +39,12 @@ angular.module(moduleName, ['virtoCommerce.catalogModule'])
                 permission: 'attribute-grid:access',
             };
             mainMenuService.addMenuItem(menuItem);
+
+            var trashWidget = {
+                controller: 'VirtoCommerce.AttributeGrid.trashWidgetController',
+                template: 'Modules/$(VirtoCommerce.AttributeGrid)/Scripts/widgets/trash-widget.html',
+            };
+
+            widgetService.registerWidget(trashWidget, 'mainDashboard');
         }
     ]);

@@ -57,6 +57,7 @@ public class Module : IModule, IHasConfiguration
         // Register services
         serviceCollection.AddTransient<IPropertyManagerService, PropertyManagerService>();
         serviceCollection.AddTransient<IPropertyTrashService, PropertyTrashService>();
+        serviceCollection.AddTransient<IPropertyExportService, PropertyExportService>();
     }
 
     public void PostInitialize(IApplicationBuilder appBuilder)
