@@ -1,57 +1,71 @@
-# Attribute Grid
+# VirtoCommerce Attribute Grid
 
-## Overview
+Модуль для централизованного управления атрибутами (свойствами) товаров в VirtoCommerce.
 
-The Attribute Grid module provides a clean, compact manager for product attributes in Virto Commerce.
-The UI focuses on minimal visual noise by replacing bulky trees with compact dropdowns and breadcrumbs.
+## Возможности
 
-- **New experience:** A grid-first, minimal UI for attribute management with inline actions and compact filters.
-- **Replacement:** Replaces legacy attribute screens with a single grid and a compact edit form.
-- **Dependencies:** Catalog for catalog/category metadata and platform UI (blades, permissions, settings).
-- **Deployment:** Admins use it to manage product properties in large catalogs while keeping the UI lightweight.
+- 📋 **Единая таблица** — все свойства каталога в одном месте.
+- 🔍 **Поиск и фильтрация** — по имени, каталогу, категории, типу значения.
+- ✏️ **Редактирование** — изменение IsFilterable, IsRequired и других параметров.
+- 🗑️ **Корзина** — безопасное удаление с возможностью восстановления (30 дней).
+- 📊 **Экспорт в Excel** — выгрузка списка свойств с учетом фильтров.
+- 🧹 **Фоновая очистка корзины** — ежедневная очистка просроченных записей.
+- 📌 **Dashboard виджет** — быстрый доступ к корзине.
+- 🌐 **Локализация** — английский и русский языки.
 
-## Functional Requirements
+## Установка
 
-- Grid with search, catalog filter, and type filter.
-- Attribute rows show name, code, type, scope, owner path, filter flag, and usage.
-- Owner selection is represented as dropdown-based catalog/category selection and a breadcrumb path string.
-- Actions are lightweight (inline edit/delete) and trash is a separate entry point.
+1. Скачайте релиз из [GitHub Releases](https://github.com/your-org/vc-module-attribute-grid/releases).
+2. Распакуйте архив в папку `modules` вашей VirtoCommerce платформы.
+3. Перезапустите платформу.
+4. Модуль автоматически применит миграции БД.
 
-## Scenarios
+## Требования
 
-List of scenarios that the new module implements:
+- VirtoCommerce Platform 3.x
+- .NET 8.0+
+- SQL Server / PostgreSQL / MySQL
 
-1. Search and filter attributes in a minimal grid.
-2. Inspect attribute ownership via breadcrumb-like path.
-3. Create or edit attributes from a compact form.
-4. Manage deleted attributes in a separate trash view.
+## Конфигурация
 
-## Web API
+Модуль не требует дополнительной конфигурации. Опционально можно использовать настройки в `appsettings.json`:
 
-Web API documentation for each module is built out automatically and can be accessed by following the link bellow:
-<https://link-to-swager-api>
+```json
+{
+  "AttributeGrid": {
+    "TrashRetentionDays": 30
+  }
+}
+```
 
-## Database Model
+## API
 
-![DB model](./docs/media/diagram-db-model.png)
+| Метод | URL | Описание |
+| --- | --- | --- |
+| POST | `/api/attribute-grid/search` | Поиск свойств |
+| GET | `/api/attribute-grid/{id}` | Получить свойство |
+| PUT | `/api/attribute-grid` | Создать/обновить |
+| POST | `/api/attribute-grid/trash` | Переместить в корзину |
+| GET | `/api/attribute-grid/trash` | Список корзины |
+| POST | `/api/attribute-grid/trash/{id}/restore` | Восстановить |
+| GET | `/api/attribute-grid/export` | Экспорт в Excel |
 
-## Related topics
+## Разработка
 
-[Some Article1](some-article1.md)
+```bash
+# Клонирование
+git clone https://github.com/your-org/vc-module-attribute-grid.git
 
-[Some Article2](some-article2.md)
+# Сборка
+dotnet build
 
-## License
+# Тесты
+dotnet test
 
-Copyright (c) Virto Solutions LTD.  All rights reserved.
+# Запуск миграций
+dotnet ef database update --project src/VirtoCommerce.AttributeGrid.Data
+```
 
-Licensed under the Virto Commerce Open Software License (the "License"); you
-may not use this file except in compliance with the License. You may
-obtain a copy of the License at
+## Лицензия
 
-<https://virtocommerce.com/open-source-license>
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-implied.
+MIT License.

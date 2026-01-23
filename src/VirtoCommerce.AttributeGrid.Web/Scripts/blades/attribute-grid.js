@@ -5,8 +5,10 @@ angular.module('VirtoCommerce.AttributeGrid')
         'platformWebApp.bladeNavigationService',
         'platformWebApp.dialogService',
         '$translate',
+        '$window',
+        '$httpParamSerializer',
         'virtoCommerce.catalogModule.catalogs',
-        function ($scope, api, bladeNavigationService, dialogService, $translate, catalogsResource) {
+        function ($scope, api, bladeNavigationService, dialogService, $translate, $window, $httpParamSerializer, catalogsResource) {
             var blade = $scope.blade;
             blade.title = $translate.instant('AttributeGrid.blades.list.title');
             blade.headIcon = 'fa fa-tags';
@@ -15,6 +17,8 @@ angular.module('VirtoCommerce.AttributeGrid')
             $scope.filter = {
                 keyword: '',
                 catalogId: null,
+                categoryId: null,
+                categoryPath: null,
                 valueType: null,
             };
 
@@ -73,6 +77,7 @@ angular.module('VirtoCommerce.AttributeGrid')
                 var criteria = {
                     keyword: $scope.filter.keyword,
                     catalogId: $scope.filter.catalogId,
+                    categoryId: $scope.filter.categoryId,
                     valueType: $scope.filter.valueType,
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount,
@@ -216,6 +221,39 @@ angular.module('VirtoCommerce.AttributeGrid')
                 });
             };
 
+            $scope.selectCategory = function () {
+                var selectionBlade = {
+                    id: 'attributeGridCategorySelect',
+                    title: $translate.instant('AttributeGrid.blades.list.selectCategoryTitle'),
+                    controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
+                    template: '$(Platform)/Scripts/app/catalog/blades/catalog-item-select.tpl.html',
+                    options: {
+                        showCheckingMultiple: false,
+                        allowCheckingItem: true,
+                        allowCheckingCategory: true,
+                        checkItemFn: function (listItem, isSelected) {
+                            if (!isSelected) {
+                                return;
+                            }
+
+                            var isCategory = listItem.type === 'category' || listItem.objectType === 'category';
+                            $scope.filter.catalogId = listItem.catalogId || listItem.id;
+                            $scope.filter.categoryId = isCategory ? listItem.id : null;
+                            $scope.filter.categoryPath = listItem.path || listItem.name;
+                            blade.refresh();
+                        },
+                    },
+                };
+
+                bladeNavigationService.showBlade(selectionBlade, blade);
+            };
+
+            $scope.clearCategory = function () {
+                $scope.filter.categoryId = null;
+                $scope.filter.categoryPath = null;
+                blade.refresh();
+            };
+
             blade.toolbarCommands = [
                 {
                     name: 'platform.commands.add',
@@ -238,6 +276,22 @@ angular.module('VirtoCommerce.AttributeGrid')
                     icon: 'fa fa-refresh',
                     executeMethod: blade.refresh,
                     canExecuteMethod: function () { return !blade.isLoading; },
+                },
+                {
+                    name: 'AttributeGrid.commands.export',
+                    icon: 'fa fa-download',
+                    executeMethod: function () {
+                        var params = $httpParamSerializer({
+                            keyword: $scope.filter.keyword || '',
+                            catalogId: $scope.filter.catalogId || '',
+                            categoryId: $scope.filter.categoryId || '',
+                            valueType: $scope.filter.valueType || '',
+                        });
+
+                        $window.open('api/attribute-grid/export?' + params, '_blank');
+                    },
+                    canExecuteMethod: function () { return true; },
+                    permission: 'attribute-grid:read',
                 },
                 {
                     name: 'AttributeGrid.commands.deleteSelected',

@@ -20,6 +20,7 @@ public class AttributeGridController : Controller
 {
     private readonly IPropertyManagerService _propertyManagerService;
     private readonly IPropertyTrashService _propertyTrashService;
+    private readonly IPropertyExportService _propertyExportService;
     private readonly IPropertySearchService _propertySearchService;
     private readonly IPropertyService _propertyService;
     private readonly ICatalogService _catalogService;
@@ -28,6 +29,7 @@ public class AttributeGridController : Controller
     public AttributeGridController(
         IPropertyManagerService propertyManagerService,
         IPropertyTrashService propertyTrashService,
+        IPropertyExportService propertyExportService,
         IPropertySearchService propertySearchService,
         IPropertyService propertyService,
         ICatalogService catalogService,
@@ -35,6 +37,7 @@ public class AttributeGridController : Controller
     {
         _propertyManagerService = propertyManagerService;
         _propertyTrashService = propertyTrashService;
+        _propertyExportService = propertyExportService;
         _propertySearchService = propertySearchService;
         _propertyService = propertyService;
         _catalogService = catalogService;
@@ -158,6 +161,27 @@ public class AttributeGridController : Controller
         };
 
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Export properties to Excel.
+    /// </summary>
+    [HttpGet]
+    [Route("export")]
+    [Authorize(Permissions.Read)]
+    public async Task<ActionResult> Export([FromQuery] PropertySearchCriteria criteria)
+    {
+        criteria ??= new PropertySearchCriteria();
+        criteria.Skip = 0;
+        criteria.Take = 10000;
+
+        var searchResult = await _propertyManagerService.SearchPropertiesAsync(criteria);
+        var bytes = _propertyExportService.ExportToExcel(searchResult.Results ?? Array.Empty<PropertyListItem>());
+
+        return File(
+            bytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "attribute-grid-export.xlsx");
     }
 
     /// <summary>
