@@ -82,7 +82,9 @@ angular.module('VirtoCommerce.AttributeGrid')
             $scope.saveChanges = function () {
                 blade.isLoading = true;
                 if (!blade.currentEntity.code) {
-                    blade.currentEntity.code = blade.currentEntity.name;
+                    blade.isLoading = false;
+                    bladeNavigationService.setError('Код обязателен!', blade);
+                    return;
                 }
 
                 if (!blade.currentEntity.id && blade.currentEntityId) {
@@ -99,24 +101,28 @@ angular.module('VirtoCommerce.AttributeGrid')
                         return;
                     }
 
-                    api.save(blade.currentEntity, function (data) {
-                        blade.currentEntity = data;
-                        blade.currentEntityId = data.id;
-                        blade.isNew = false;
-                        blade.title = data.name;
-                        blade.origEntity = angular.copy(blade.currentEntity);
-                        blade.isLoading = false;
-                        if (blade.parentBlade && blade.parentBlade.refresh) {
-                            blade.parentBlade.refresh();
-                        }
-                    }, function (error) {
-                        blade.isLoading = false;
-                        bladeNavigationService.setError(
-                            $translate.instant('AttributeGrid.messages.saveError', { status: error.status }),
-                            blade);
-                    });
+                    performSave();
                 });
             };
+
+            function performSave() {
+                api.save(blade.currentEntity, function (data) {
+                    blade.currentEntity = data;
+                    blade.currentEntityId = data.id;
+                    blade.isNew = false;
+                    blade.title = data.name;
+                    blade.origEntity = angular.copy(blade.currentEntity);
+                    blade.isLoading = false;
+                    if (blade.parentBlade && blade.parentBlade.refresh) {
+                        blade.parentBlade.refresh();
+                    }
+                }, function (error) {
+                    blade.isLoading = false;
+                    bladeNavigationService.setError(
+                        $translate.instant('AttributeGrid.messages.saveError', { status: error.status }),
+                        blade);
+                });
+            }
 
             $scope.resetChanges = function () {
                 blade.currentEntity = angular.copy(blade.origEntity);
