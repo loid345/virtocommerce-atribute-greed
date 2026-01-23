@@ -34,14 +34,22 @@ public class PropertyManagerService : IPropertyManagerService
 
     public async Task<GenericSearchResult<PropertyListItem>> SearchPropertiesAsync(PropertySearchCriteria criteria)
     {
+        criteria ??= new PropertySearchCriteria();
+
+        var requiresInMemoryFiltering = !string.IsNullOrEmpty(criteria.CategoryId)
+            || !string.IsNullOrEmpty(criteria.ValueType)
+            || !string.IsNullOrEmpty(criteria.PropertyType)
+            || criteria.IsFilterable.HasValue
+            || criteria.IsDictionary.HasValue;
+
         var searchCriteria = new CatalogPropertySearchCriteria
         {
             Keyword = criteria.Keyword,
             CatalogIds = string.IsNullOrEmpty(criteria.CatalogId)
                 ? null
                 : new[] { criteria.CatalogId },
-            Skip = criteria.Skip,
-            Take = criteria.Take,
+            Skip = requiresInMemoryFiltering ? 0 : criteria.Skip,
+            Take = requiresInMemoryFiltering ? int.MaxValue : criteria.Take,
             Sort = criteria.Sort,
         };
 
@@ -82,9 +90,18 @@ public class PropertyManagerService : IPropertyManagerService
             items.Add(item);
         }
 
+        var totalCount = items.Count;
+        if (requiresInMemoryFiltering)
+        {
+            items = items
+                .Skip(criteria.Skip)
+                .Take(criteria.Take)
+                .ToList();
+        }
+
         return new GenericSearchResult<PropertyListItem>
         {
-            TotalCount = searchResult.TotalCount,
+            TotalCount = requiresInMemoryFiltering ? totalCount : searchResult.TotalCount,
             Results = items,
         };
     }
@@ -138,14 +155,17 @@ public class PropertyManagerService : IPropertyManagerService
             UsageCount = 0,
         };
 
-        item.OwnerPath = await BuildOwnerPathAsync(property);
+        var ownerInfo = await BuildOwnerPathAsync(property);
+        item.OwnerPath = ownerInfo.OwnerPath;
+        item.CatalogName = ownerInfo.CatalogName;
 
         return item;
     }
 
-    private async Task<string> BuildOwnerPathAsync(Property property)
+    private async Task<(string OwnerPath, string CatalogName)> BuildOwnerPathAsync(Property property)
     {
         var parts = new List<string>();
+        string catalogName = null;
 
         if (!string.IsNullOrEmpty(property.CatalogId))
         {
@@ -157,6 +177,7 @@ public class PropertyManagerService : IPropertyManagerService
             if (catalog != null)
             {
                 parts.Add(catalog.Name);
+                catalogName = catalog.Name;
             }
         }
 
@@ -173,6 +194,6 @@ public class PropertyManagerService : IPropertyManagerService
             }
         }
 
-        return string.Join(" / ", parts);
+        return (string.Join(" / ", parts), catalogName);
     }
 }
