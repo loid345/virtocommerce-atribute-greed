@@ -6,7 +6,7 @@
 
   <platformVersion>{PlatformVersion}</platformVersion>
   <dependencies>
-    <!--<dependency id="VirtoCommerce.Core" version="{CoreVersion}" />-->
+    <dependency id="VirtoCommerce.Catalog" version="{CatalogVersion}" />
   </dependencies>
 
   <title>Attribute Grid</title>
