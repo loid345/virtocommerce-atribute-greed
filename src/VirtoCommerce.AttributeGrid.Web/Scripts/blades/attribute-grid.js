@@ -2,33 +2,28 @@ angular.module('VirtoCommerce.AttributeGrid')
     .controller('VirtoCommerce.AttributeGrid.attributeGridController', [
         '$scope',
         'VirtoCommerce.AttributeGrid.webApi',
-        '$window',
         'platformWebApp.bladeNavigationService',
-        function ($scope, api, $window, bladeNavigationService) {
+        'platformWebApp.dialogService',
+        'virtoCommerce.catalogModule.catalogs',
+        function ($scope, api, bladeNavigationService, dialogService, catalogsResource) {
             var blade = $scope.blade;
-            blade.title = 'Attribute Grid';
+            blade.title = 'Менеджер Атрибутов';
+            blade.headIcon = 'fa fa-tags';
+            blade.updatePermission = 'propertiesManager:update';
 
-            $scope.filters = {
+            $scope.filter = {
                 keyword: '',
-                catalogId: '',
-                catalogName: '',
-                valueType: '',
-                propertyType: '',
+                catalogId: null,
+                valueType: null,
             };
 
-            $scope.valueTypes = [
-                { value: '', title: 'All types' },
-                { value: 'ShortText', title: 'Text' },
-                { value: 'Number', title: 'Number' },
-                { value: 'DateTime', title: 'Date' },
-                { value: 'Boolean', title: 'Boolean' },
-            ];
+            $scope.catalogs = [];
 
-            $scope.propertyTypes = [
-                { value: '', title: 'All scopes' },
-                { value: 'Product', title: 'Product' },
-                { value: 'Variation', title: 'Variation' },
-            ];
+            function loadCatalogs() {
+                catalogsResource.getCatalogs({}, function (data) {
+                    $scope.catalogs = data;
+                });
+            }
 
             $scope.pageSettings = {
                 currentPage: 1,
@@ -36,50 +31,34 @@ angular.module('VirtoCommerce.AttributeGrid')
                 totalItems: 0,
             };
 
-            $scope.pageSettings.pageChanged = function () {
-                blade.refresh();
-            };
-
             blade.refresh = function () {
                 blade.isLoading = true;
 
                 var criteria = {
-                    keyword: $scope.filters.keyword,
-                    catalogId: $scope.filters.catalogId,
-                    valueType: $scope.filters.valueType,
-                    propertyType: $scope.filters.propertyType,
+                    keyword: $scope.filter.keyword,
+                    catalogId: $scope.filter.catalogId,
+                    valueType: $scope.filter.valueType,
                     skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
                     take: $scope.pageSettings.itemsPerPageCount,
                 };
 
                 api.search(criteria, function (result) {
                     blade.isLoading = false;
+                    blade.currentEntities = result.results || result.items || [];
                     $scope.pageSettings.totalItems = result.totalCount;
-                    blade.currentEntities = result.results || [];
+                }, function (error) {
+                    blade.isLoading = false;
+                    bladeNavigationService.setError('Ошибка загрузки: ' + error.status, blade);
                 });
             };
 
-            $scope.toggleFilterable = function (item) {
-                api.update({ id: item.id }, { isFilterable: !item.isFilterable }, function () {
-                    item.isFilterable = !item.isFilterable;
-                });
-            };
+            blade.selectNode = function (item) {
+                $scope.selectedNodeId = item.id;
 
-            $scope.deleteProperty = function (item) {
-                var confirmed = $window.confirm('Move property to trash?');
-                if (!confirmed) {
-                    return;
-                }
-
-                api.remove({ id: item.id }, function () {
-                    blade.refresh();
-                });
-            };
-
-            $scope.openDetail = function (item) {
                 var detailBlade = {
                     id: 'attributeDetail',
                     title: item.name,
+                    subtitle: 'Редактирование атрибута',
                     controller: 'VirtoCommerce.AttributeGrid.attributeDetailController',
                     template: 'Modules/$(VirtoCommerce.AttributeGrid)/Scripts/blades/attribute-detail.html',
                     currentEntityId: item.id,
@@ -87,61 +66,61 @@ angular.module('VirtoCommerce.AttributeGrid')
                 bladeNavigationService.showBlade(detailBlade, blade);
             };
 
-            $scope.openCatalogSelector = function () {
-                var newBlade = {
-                    id: 'catalogSelector',
-                    title: 'Select catalog or category',
-                    controller: 'virtoCommerce.catalogModule.catalogItemSelectController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/common/catalog-items-select.tpl.html',
-                    breadcrumbs: [],
-                    toolbarCommands: [],
-                    options: {
-                        showCheckingMultiple: false,
-                        checkItemFn: function (listItem, isSelected) {
-                            if (isSelected) {
-                                $scope.filters.catalogId = listItem.id;
-                                $scope.filters.catalogName = listItem.name;
-                                blade.refresh();
-                                bladeNavigationService.closeBlade(newBlade);
-                            }
-                        },
-                    },
-                };
-
-                bladeNavigationService.showBlade(newBlade, blade);
-            };
-
-            $scope.openTrash = function () {
+            function openTrash() {
                 var trashBlade = {
                     id: 'attributeTrash',
-                    title: 'Trash',
+                    title: 'Корзина',
+                    subtitle: 'Удалённые атрибуты',
                     controller: 'VirtoCommerce.AttributeGrid.attributeTrashListController',
                     template: 'Modules/$(VirtoCommerce.AttributeGrid)/Scripts/blades/attribute-trash-list.html',
                 };
 
                 bladeNavigationService.showBlade(trashBlade, blade);
+            }
+
+            $scope.deleteItem = function (item) {
+                var dialog = {
+                    id: 'confirmDelete',
+                    title: 'Удаление атрибута',
+                    message: 'Удалить атрибут "' + item.name + '" в корзину?',
+                    callback: function (confirmed) {
+                        if (confirmed) {
+                            blade.isLoading = true;
+                            api.remove({ id: item.id }, function () {
+                                blade.refresh();
+                            });
+                        }
+                    },
+                };
+                dialogService.showConfirmationDialog(dialog);
             };
 
-            $scope.clearCatalogFilter = function ($event) {
+            $scope.toggleFilterable = function (item, $event) {
                 if ($event) {
                     $event.stopPropagation();
                 }
 
-                $scope.filters.catalogId = '';
-                $scope.filters.catalogName = '';
-                blade.refresh();
+                api.update({ id: item.id }, { isFilterable: !item.isFilterable }, function () {
+                    item.isFilterable = !item.isFilterable;
+                });
             };
 
-            $scope.$watchGroup([
-                function () { return $scope.filters.keyword; },
-                function () { return $scope.filters.catalogId; },
-                function () { return $scope.filters.valueType; },
-                function () { return $scope.filters.propertyType; },
-            ], function () {
-                $scope.pageSettings.currentPage = 1;
-                blade.refresh();
-            });
+            blade.toolbarCommands = [
+                {
+                    name: 'platform.commands.refresh',
+                    icon: 'fa fa-refresh',
+                    executeMethod: blade.refresh,
+                    canExecuteMethod: function () { return !blade.isLoading; },
+                },
+                {
+                    name: 'Корзина',
+                    icon: 'fa fa-trash-o',
+                    executeMethod: openTrash,
+                    canExecuteMethod: function () { return true; },
+                },
+            ];
 
+            loadCatalogs();
             blade.refresh();
-        }
+        },
     ]);
