@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.AttributeGrid.Core.Models;
 using VirtoCommerce.AttributeGrid.Core.Services;
+using VirtoCommerce.AttributeGrid.Data.Models;
+using VirtoCommerce.AttributeGrid.Data.Repositories;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 
@@ -12,28 +15,37 @@ namespace VirtoCommerce.AttributeGrid.Data.Services;
 
 public class PropertyTrashService : IPropertyTrashService
 {
+    private readonly Func<AttributeGridDbContext> _dbContextFactory;
     private readonly IPropertyService _propertyService;
-    private static readonly List<PropertyTrashEntry> TrashEntries = new();
-    private static readonly object TrashLock = new();
 
-    public PropertyTrashService(IPropertyService propertyService)
+    public PropertyTrashService(Func<AttributeGridDbContext> dbContextFactory, IPropertyService propertyService)
     {
+        _dbContextFactory = dbContextFactory;
         _propertyService = propertyService;
     }
 
-    public Task<IList<PropertyTrashEntry>> GetTrashEntriesAsync()
+    public async Task<IList<PropertyTrashEntry>> GetTrashEntriesAsync()
     {
-        List<PropertyTrashEntry> result;
+        await using var context = _dbContextFactory();
 
-        lock (TrashLock)
-        {
-            result = TrashEntries
-                .Where(x => x.ExpirationDate > DateTime.UtcNow)
-                .OrderByDescending(x => x.DeletedDate)
-                .ToList();
-        }
-
-        return Task.FromResult<IList<PropertyTrashEntry>>(result);
+        return await context.PropertyTrashEntries
+            .Where(x => x.ExpirationDate > DateTime.UtcNow)
+            .OrderByDescending(x => x.DeletedDate)
+            .AsNoTracking()
+            .Select(x => new PropertyTrashEntry
+            {
+                Id = x.Id,
+                PropertyId = x.PropertyId,
+                PropertyName = x.PropertyName,
+                PropertyCode = x.PropertyCode,
+                CatalogId = x.CatalogId,
+                CategoryId = x.CategoryId,
+                PropertyDataJson = x.PropertyDataJson,
+                DeletedDate = x.DeletedDate,
+                DeletedBy = x.DeletedBy,
+                ExpirationDate = x.ExpirationDate,
+            })
+            .ToListAsync();
     }
 
     public async Task MoveToTrashAsync(string propertyId, string deletedBy)
@@ -46,7 +58,7 @@ public class PropertyTrashService : IPropertyTrashService
             return;
         }
 
-        var trashEntry = new PropertyTrashEntry
+        var trashEntry = new PropertyTrashEntity
         {
             Id = Guid.NewGuid().ToString(),
             PropertyId = propertyId,
@@ -60,9 +72,10 @@ public class PropertyTrashService : IPropertyTrashService
             ExpirationDate = DateTime.UtcNow.AddDays(30),
         };
 
-        lock (TrashLock)
+        await using (var context = _dbContextFactory())
         {
-            TrashEntries.Add(trashEntry);
+            context.PropertyTrashEntries.Add(trashEntry);
+            await context.SaveChangesAsync();
         }
 
         await _propertyService.DeleteAsync(new[] { propertyId });
@@ -70,12 +83,10 @@ public class PropertyTrashService : IPropertyTrashService
 
     public async Task RestoreFromTrashAsync(string trashEntryId)
     {
-        PropertyTrashEntry entry;
+        PropertyTrashEntity entry;
 
-        lock (TrashLock)
-        {
-            entry = TrashEntries.FirstOrDefault(x => x.Id == trashEntryId);
-        }
+        await using var context = _dbContextFactory();
+        entry = await context.PropertyTrashEntries.FirstOrDefaultAsync(x => x.Id == trashEntryId);
 
         if (entry == null)
         {
@@ -89,10 +100,8 @@ public class PropertyTrashService : IPropertyTrashService
             await _propertyService.SaveChangesAsync(new[] { property });
         }
 
-        lock (TrashLock)
-        {
-            TrashEntries.Remove(entry);
-        }
+        context.PropertyTrashEntries.Remove(entry);
+        await context.SaveChangesAsync();
     }
 
     public async Task DeletePermanentlyAsync(string propertyId)
@@ -102,11 +111,22 @@ public class PropertyTrashService : IPropertyTrashService
 
     public Task CleanupExpiredAsync()
     {
-        lock (TrashLock)
+        return CleanupExpiredInternalAsync();
+    }
+
+    private async Task CleanupExpiredInternalAsync()
+    {
+        await using var context = _dbContextFactory();
+        var expiredEntries = await context.PropertyTrashEntries
+            .Where(entry => entry.ExpirationDate <= DateTime.UtcNow)
+            .ToListAsync();
+
+        if (expiredEntries.Count == 0)
         {
-            TrashEntries.RemoveAll(entry => entry.ExpirationDate <= DateTime.UtcNow);
+            return;
         }
 
-        return Task.CompletedTask;
+        context.PropertyTrashEntries.RemoveRange(expiredEntries);
+        await context.SaveChangesAsync();
     }
 }

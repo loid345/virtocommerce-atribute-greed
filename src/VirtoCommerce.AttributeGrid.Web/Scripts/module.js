@@ -5,7 +5,7 @@ if (AppDependencies !== undefined) {
     AppDependencies.push(moduleName);
 }
 
-angular.module(moduleName, [])
+angular.module(moduleName, ['virtoCommerce.catalogModule'])
     .config(['$stateProvider',
         function ($stateProvider) {
             $stateProvider
