@@ -14,14 +14,17 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <select class="form-control"
-                  ng-model="filter.catalogId"
-                  ng-change="blade.refresh()"
-                  style="width: 180px;">
-            <option value="">— Все каталоги —</option>
-            <option ng-repeat="cat in catalogs" value="{{cat.id}}">{{cat.name}}</option>
-          </select>
+        <div class="form-group" style="min-width: 220px;">
+          <ui-select ng-model="filter.catalogId"
+                     ng-change="blade.refresh()"
+                     theme="select2">
+            <ui-select-match allow-clear="true" placeholder="— Все каталоги —">
+              {{$select.selected.name}}
+            </ui-select-match>
+            <ui-select-choices repeat="cat.id as cat in catalogs | filter: $select.search">
+              <span ng-bind-html="cat.name | highlight: $select.search"></span>
+            </ui-select-choices>
+          </ui-select>
         </div>
 
         <div class="form-group">
@@ -60,7 +63,7 @@
             <tr ng-repeat="item in blade.currentEntities"
                 ng-click="blade.selectNode(item)"
                 style="cursor: pointer;"
-                ng-class="{'info': selectedId === item.id}">
+                ng-class="{'info': selectedNodeId === item.id}">
               <td>
                 <strong>{{item.name}}</strong>
                 <div class="text-muted small">{{item.code}}</div>

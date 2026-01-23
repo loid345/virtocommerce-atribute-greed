@@ -53,7 +53,7 @@ angular.module('VirtoCommerce.AttributeGrid')
             };
 
             blade.selectNode = function (item) {
-                $scope.selectedId = item.id;
+                $scope.selectedNodeId = item.id;
 
                 var detailBlade = {
                     id: 'attributeDetail',
@@ -114,7 +114,7 @@ angular.module('VirtoCommerce.AttributeGrid')
                 },
                 {
                     name: 'Корзина',
-                    icon: 'fa fa-trash',
+                    icon: 'fa fa-trash-o',
                     executeMethod: openTrash,
                     canExecuteMethod: function () { return true; },
                 },
