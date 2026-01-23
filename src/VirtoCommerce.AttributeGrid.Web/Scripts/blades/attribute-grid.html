@@ -8,6 +8,10 @@
             <i class="fa fa-refresh"></i>
             Refresh
           </button>
+          <button class="btn" type="button" ng-click="openTrash()">
+            <i class="fa fa-trash"></i>
+            Trash
+          </button>
         </div>
       </div>
 
@@ -52,6 +56,7 @@
             <th>Filter</th>
             <th>Required</th>
             <th>Usage</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -78,8 +83,10 @@
               <button class="btn" type="button" ng-click="openDetail(item)">
                 <i class="fa fa-pencil"></i>
               </button>
+              <button class="btn" type="button" ng-click="deleteProperty(item)">
+                <i class="fa fa-trash"></i>
+              </button>
             </td>
-            <td>{{item.usageCount}} items</td>
           </tr>
           <tr ng-if="!blade.currentEntities.length">
             <td colspan="9">No attributes found.</td>

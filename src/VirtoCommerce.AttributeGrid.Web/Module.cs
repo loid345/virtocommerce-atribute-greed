@@ -50,6 +50,7 @@ public class Module : IModule, IHasConfiguration
 
         // Register services
         serviceCollection.AddTransient<IPropertyManagerService, PropertyManagerService>();
+        serviceCollection.AddTransient<IPropertyTrashService, PropertyTrashService>();
     }
 
     public void PostInitialize(IApplicationBuilder appBuilder)

@@ -2,8 +2,9 @@ angular.module('VirtoCommerce.AttributeGrid')
     .controller('VirtoCommerce.AttributeGrid.attributeGridController', [
         '$scope',
         'VirtoCommerce.AttributeGrid.webApi',
+        '$window',
         'platformWebApp.bladeNavigationService',
-        function ($scope, api, bladeNavigationService) {
+        function ($scope, api, $window, bladeNavigationService) {
             var blade = $scope.blade;
             blade.title = 'Attribute Grid';
 
@@ -64,6 +65,17 @@ angular.module('VirtoCommerce.AttributeGrid')
                 });
             };
 
+            $scope.deleteProperty = function (item) {
+                var confirmed = $window.confirm('Move property to trash?');
+                if (!confirmed) {
+                    return;
+                }
+
+                api.remove({ id: item.id }, function () {
+                    blade.refresh();
+                });
+            };
+
             $scope.openDetail = function (item) {
                 var detailBlade = {
                     id: 'attributeDetail',
@@ -97,6 +109,17 @@ angular.module('VirtoCommerce.AttributeGrid')
                 };
 
                 bladeNavigationService.showBlade(newBlade, blade);
+            };
+
+            $scope.openTrash = function () {
+                var trashBlade = {
+                    id: 'attributeTrash',
+                    title: 'Trash',
+                    controller: 'VirtoCommerce.AttributeGrid.attributeTrashListController',
+                    template: 'Modules/$(VirtoCommerce.AttributeGrid)/Scripts/blades/attribute-trash-list.html',
+                };
+
+                bladeNavigationService.showBlade(trashBlade, blade);
             };
 
             $scope.clearCatalogFilter = function ($event) {

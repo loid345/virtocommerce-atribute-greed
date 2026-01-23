@@ -19,17 +19,20 @@ namespace VirtoCommerce.AttributeGrid.Web.Controllers.Api;
 public class AttributeGridController : Controller
 {
     private readonly IPropertyManagerService _propertyManagerService;
+    private readonly IPropertyTrashService _propertyTrashService;
     private readonly IPropertySearchService _propertySearchService;
     private readonly ICatalogService _catalogService;
     private readonly ICategoryService _categoryService;
 
     public AttributeGridController(
         IPropertyManagerService propertyManagerService,
+        IPropertyTrashService propertyTrashService,
         IPropertySearchService propertySearchService,
         ICatalogService catalogService,
         ICategoryService categoryService)
     {
         _propertyManagerService = propertyManagerService;
+        _propertyTrashService = propertyTrashService;
         _propertySearchService = propertySearchService;
         _catalogService = catalogService;
         _categoryService = categoryService;
@@ -175,6 +178,33 @@ public class AttributeGridController : Controller
     public async Task<ActionResult> UpdateProperty(string id, [FromBody] PropertyUpdateRequest request)
     {
         await _propertyManagerService.UpdatePropertyAsync(id, request.IsFilterable, request.IsRequired);
+        return NoContent();
+    }
+
+    [HttpDelete]
+    [Route("{id}")]
+    [Authorize(Permissions.Update)]
+    public async Task<ActionResult> DeleteProperty(string id)
+    {
+        await _propertyTrashService.MoveToTrashAsync(id, User?.Identity?.Name);
+        return NoContent();
+    }
+
+    [HttpGet]
+    [Route("trash")]
+    [Authorize(Permissions.Read)]
+    public async Task<ActionResult<IList<PropertyTrashEntry>>> GetTrashEntries()
+    {
+        var entries = await _propertyTrashService.GetTrashEntriesAsync();
+        return Ok(entries);
+    }
+
+    [HttpPost]
+    [Route("trash/{id}/restore")]
+    [Authorize(Permissions.Update)]
+    public async Task<ActionResult> RestoreTrashEntry(string id)
+    {
+        await _propertyTrashService.RestoreFromTrashAsync(id);
         return NoContent();
     }
 
