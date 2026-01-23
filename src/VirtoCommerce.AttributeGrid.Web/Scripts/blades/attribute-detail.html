@@ -2,41 +2,47 @@
   <div class="blade-inner">
     <form name="formScope" class="form-horizontal">
       <div class="form-group">
-        <label class="control-label col-sm-3">Name</label>
+        <label class="control-label col-sm-3">{{ 'AttributeGrid.blades.detail.labels.name' | translate }}</label>
         <div class="col-sm-9">
           <p class="form-control-static" ng-if="!blade.isNew">
             <strong>{{blade.currentEntity.name}}</strong>
           </p>
-          <input class="form-control" ng-if="blade.isNew" ng-model="blade.currentEntity.name" placeholder="Введите имя атрибута">
+          <input class="form-control"
+                 ng-if="blade.isNew"
+                 ng-model="blade.currentEntity.name"
+                 placeholder="{{ 'AttributeGrid.blades.detail.placeholders.name' | translate }}">
         </div>
       </div>
 
       <div class="form-group">
-        <label class="control-label col-sm-3">Code</label>
+        <label class="control-label col-sm-3">{{ 'AttributeGrid.blades.detail.labels.code' | translate }}</label>
         <div class="col-sm-9">
           <p class="form-control-static" ng-if="!blade.isNew">
             <code>{{blade.currentEntity.code}}</code>
           </p>
-          <input class="form-control" ng-if="blade.isNew" ng-model="blade.currentEntity.code" placeholder="Code (если пусто — будет как Name)">
+          <input class="form-control"
+                 ng-if="blade.isNew"
+                 ng-model="blade.currentEntity.code"
+                 placeholder="{{ 'AttributeGrid.blades.detail.placeholders.code' | translate }}">
         </div>
       </div>
 
       <div class="form-group">
-        <label class="control-label col-sm-3">Type</label>
+        <label class="control-label col-sm-3">{{ 'AttributeGrid.blades.detail.labels.type' | translate }}</label>
         <div class="col-sm-9">
           <p class="form-control-static" ng-if="!blade.isNew">{{blade.currentEntity.valueType}}</p>
           <select class="form-control" ng-if="blade.isNew" ng-model="blade.currentEntity.valueType">
-            <option value="ShortText">ShortText</option>
-            <option value="LongText">LongText</option>
-            <option value="Number">Number</option>
-            <option value="DateTime">DateTime</option>
-            <option value="Boolean">Boolean</option>
+            <option value="ShortText">{{ 'AttributeGrid.blades.detail.valueTypes.shortText' | translate }}</option>
+            <option value="LongText">{{ 'AttributeGrid.blades.detail.valueTypes.longText' | translate }}</option>
+            <option value="Number">{{ 'AttributeGrid.blades.detail.valueTypes.number' | translate }}</option>
+            <option value="DateTime">{{ 'AttributeGrid.blades.detail.valueTypes.dateTime' | translate }}</option>
+            <option value="Boolean">{{ 'AttributeGrid.blades.detail.valueTypes.boolean' | translate }}</option>
           </select>
         </div>
       </div>
 
       <div class="form-group">
-        <label class="control-label col-sm-3">Owner</label>
+        <label class="control-label col-sm-3">{{ 'AttributeGrid.blades.detail.labels.owner' | translate }}</label>
         <div class="col-sm-9">
           <p class="form-control-static">
             <i class="fa fa-folder-o"></i>
@@ -46,13 +52,13 @@
       </div>
 
       <div class="form-group">
-        <label class="control-label col-sm-3">Scope</label>
+        <label class="control-label col-sm-3">{{ 'AttributeGrid.blades.detail.labels.scope' | translate }}</label>
         <div class="col-sm-9">
           <p class="form-control-static" ng-if="!blade.isNew">{{blade.currentEntity.propertyType}}</p>
           <select class="form-control" ng-if="blade.isNew" ng-model="blade.currentEntity.propertyType">
-            <option value="Product">Product</option>
-            <option value="Category">Category</option>
-            <option value="Catalog">Catalog</option>
+            <option value="Product">{{ 'AttributeGrid.blades.detail.scopes.product' | translate }}</option>
+            <option value="Category">{{ 'AttributeGrid.blades.detail.scopes.category' | translate }}</option>
+            <option value="Catalog">{{ 'AttributeGrid.blades.detail.scopes.catalog' | translate }}</option>
           </select>
         </div>
       </div>
@@ -60,35 +66,37 @@
       <hr>
 
       <div class="form-group">
-        <label class="control-label col-sm-3">Show in filters</label>
+        <label class="control-label col-sm-3">{{ 'AttributeGrid.blades.detail.labels.filterable' | translate }}</label>
         <div class="col-sm-9">
           <div class="checkbox">
             <label>
               <input type="checkbox" ng-model="blade.currentEntity.isFilterable">
-              IsFilterable
+              {{ 'AttributeGrid.blades.detail.labels.filterableValue' | translate }}
             </label>
           </div>
         </div>
       </div>
 
       <div class="form-group">
-        <label class="control-label col-sm-3">Required</label>
+        <label class="control-label col-sm-3">{{ 'AttributeGrid.blades.detail.labels.required' | translate }}</label>
         <div class="col-sm-9">
           <div class="checkbox">
             <label>
               <input type="checkbox" ng-model="blade.currentEntity.isRequired">
-              IsRequired
+              {{ 'AttributeGrid.blades.detail.labels.requiredValue' | translate }}
             </label>
           </div>
         </div>
       </div>
 
       <div class="form-group">
-        <label class="control-label col-sm-3">Multivalue</label>
+        <label class="control-label col-sm-3">{{ 'AttributeGrid.blades.detail.labels.multivalue' | translate }}</label>
         <div class="col-sm-9">
           <p class="form-control-static">
             <i class="fa" ng-class="blade.currentEntity.isMultivalue ? 'fa-check text-success' : 'fa-times text-muted'"></i>
-            {{blade.currentEntity.isMultivalue ? 'Yes' : 'No'}}
+            {{ blade.currentEntity.isMultivalue
+              ? ('AttributeGrid.common.yes' | translate)
+              : ('AttributeGrid.common.no' | translate) }}
           </p>
         </div>
       </div>
@@ -96,11 +104,11 @@
       <hr>
 
       <div class="form-group">
-        <label class="control-label col-sm-3">Usage</label>
+        <label class="control-label col-sm-3">{{ 'AttributeGrid.blades.detail.labels.usage' | translate }}</label>
         <div class="col-sm-9">
           <p class="form-control-static">
             <span class="badge">{{blade.currentEntity.usageCount}}</span>
-            items
+            {{ 'AttributeGrid.blades.detail.labels.items' | translate }}
           </p>
         </div>
       </div>

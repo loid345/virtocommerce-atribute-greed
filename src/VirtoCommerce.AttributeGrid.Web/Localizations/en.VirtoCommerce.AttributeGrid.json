@@ -1,5 +1,8 @@
 {
   "AttributeGrid": {
+    "mainMenu": {
+      "title": "Attribute Grid"
+    },
     "blades": {
       "attribute-grid": {
         "title": "Attribute Grid"
@@ -33,11 +36,49 @@
       },
       "detail": {
         "title": "Edit Attribute",
-        "newTitle": "New Attribute"
+        "newTitle": "New Attribute",
+        "labels": {
+          "name": "Name",
+          "code": "Code",
+          "type": "Type",
+          "owner": "Owner",
+          "scope": "Scope",
+          "filterable": "Show in filters",
+          "filterableValue": "Filterable",
+          "required": "Required",
+          "requiredValue": "Required",
+          "multivalue": "Multivalue",
+          "usage": "Usage",
+          "items": "items"
+        },
+        "placeholders": {
+          "name": "Enter attribute name",
+          "code": "Code (leave empty to use Name)"
+        },
+        "valueTypes": {
+          "shortText": "Short text",
+          "longText": "Long text",
+          "number": "Number",
+          "dateTime": "Date",
+          "boolean": "Yes/No"
+        },
+        "scopes": {
+          "product": "Product",
+          "category": "Category",
+          "catalog": "Catalog"
+        }
       },
       "trash": {
         "title": "Trash",
-        "subtitle": "Deleted attributes"
+        "subtitle": "Deleted attributes",
+        "empty": "Trash is empty",
+        "restore": "Restore",
+        "columns": {
+          "name": "Name",
+          "deleted": "Deleted",
+          "deletedBy": "By",
+          "expires": "Expires"
+        }
       }
     },
     "commands": {
@@ -61,6 +102,14 @@
         "title": "Bulk delete",
         "message": "Move {{count}} attributes to trash?"
       }
+    },
+    "messages": {
+      "loadError": "Load failed: {{status}}",
+      "deleteError": "Delete failed: {{status}}"
+    },
+    "common": {
+      "yes": "Yes",
+      "no": "No"
     }
   },
   "permissions": {

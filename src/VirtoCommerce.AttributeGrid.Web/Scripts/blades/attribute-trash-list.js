@@ -2,9 +2,10 @@ angular.module('VirtoCommerce.AttributeGrid')
     .controller('VirtoCommerce.AttributeGrid.attributeTrashListController', [
         '$scope',
         'VirtoCommerce.AttributeGrid.webApi',
-        function ($scope, api) {
+        '$translate',
+        function ($scope, api, $translate) {
             var blade = $scope.blade;
-            blade.title = 'Trash';
+            blade.title = $translate.instant('AttributeGrid.blades.trash.title');
             blade.headIcon = 'fa fa-trash';
 
             blade.refresh = function () {

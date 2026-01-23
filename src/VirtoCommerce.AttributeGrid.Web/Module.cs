@@ -75,7 +75,7 @@ public class Module : IModule, IHasConfiguration
         recurringJobManager.AddOrUpdate<TrashCleanupJob>(
             "AttributeGrid-TrashCleanup",
             job => job.Process(),
-            Cron.Daily);
+            Cron.Daily(3));
 
         // Apply migrations
         using var serviceScope = serviceProvider.CreateScope();
