@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -43,6 +44,9 @@ public class Module : IModule, IHasConfiguration
                     break;
             }
         });
+
+        serviceCollection.AddTransient<Func<AttributeGridDbContext>>(provider =>
+            () => provider.CreateScope().ServiceProvider.GetRequiredService<AttributeGridDbContext>());
 
         // Override models
         //AbstractTypeFactory<OriginalModel>.OverrideType<OriginalModel, ExtendedModel>().MapToType<ExtendedEntity>();
