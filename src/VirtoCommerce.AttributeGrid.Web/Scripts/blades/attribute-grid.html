@@ -63,9 +63,15 @@
               <span ng-if="!item.isRequired">—</span>
             </td>
             <td>{{item.usageCount}} items</td>
+            <td class="attribute-grid__row-actions">
+              <button class="btn" type="button" ng-click="openDetail(item)">
+                <i class="fa fa-pencil"></i>
+              </button>
+            </td>
+            <td>{{item.usageCount}} items</td>
           </tr>
           <tr ng-if="!blade.currentEntities.length">
-            <td colspan="8">No attributes found.</td>
+            <td colspan="9">No attributes found.</td>
           </tr>
         </tbody>
       </table>

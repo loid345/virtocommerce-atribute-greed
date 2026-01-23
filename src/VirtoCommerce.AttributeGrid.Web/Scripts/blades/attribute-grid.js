@@ -2,7 +2,8 @@ angular.module('VirtoCommerce.AttributeGrid')
     .controller('VirtoCommerce.AttributeGrid.attributeGridController', [
         '$scope',
         'VirtoCommerce.AttributeGrid.webApi',
-        function ($scope, api) {
+        'platformWebApp.bladeNavigationService',
+        function ($scope, api, bladeNavigationService) {
             var blade = $scope.blade;
             blade.title = 'Attribute Grid';
 
@@ -60,6 +61,17 @@ angular.module('VirtoCommerce.AttributeGrid')
                 api.update({ id: item.id }, { isFilterable: !item.isFilterable }, function () {
                     item.isFilterable = !item.isFilterable;
                 });
+            };
+
+            $scope.openDetail = function (item) {
+                var detailBlade = {
+                    id: 'attributeDetail',
+                    title: item.name,
+                    controller: 'VirtoCommerce.AttributeGrid.attributeDetailController',
+                    template: 'Modules/$(VirtoCommerce.AttributeGrid)/Scripts/blades/attribute-detail.html',
+                    currentEntityId: item.id,
+                };
+                bladeNavigationService.showBlade(detailBlade, blade);
             };
 
             $scope.$watchGroup([
