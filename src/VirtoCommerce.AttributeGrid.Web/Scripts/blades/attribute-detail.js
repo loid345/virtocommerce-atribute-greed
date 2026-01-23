@@ -3,8 +3,9 @@ angular.module('VirtoCommerce.AttributeGrid')
         '$scope',
         'VirtoCommerce.AttributeGrid.webApi',
         'platformWebApp.bladeNavigationService',
+        '$q',
         '$translate',
-        function ($scope, api, bladeNavigationService, $translate) {
+        function ($scope, api, bladeNavigationService, $q, $translate) {
             var blade = $scope.blade;
             blade.headIcon = 'fa fa-tag';
             blade.updatePermission = 'attribute-grid:update';
@@ -44,6 +45,40 @@ angular.module('VirtoCommerce.AttributeGrid')
                 return !angular.equals(blade.currentEntity, blade.origEntity);
             };
 
+            function normalizeCode(code) {
+                return (code || '').trim();
+            }
+
+            $scope.checkCodeUnique = function (code) {
+                var normalizedCode = normalizeCode(code);
+                if (!normalizedCode) {
+                    return $q.resolve(true);
+                }
+
+                if (!blade.isNew && blade.origEntity && normalizedCode.toLowerCase() === normalizeCode(blade.origEntity.code).toLowerCase()) {
+                    return $q.resolve(true);
+                }
+
+                return $q(function (resolve) {
+                    var criteria = {
+                        keyword: normalizedCode,
+                        take: 50,
+                    };
+
+                    api.search(criteria, function (data) {
+                        var results = data.results || data.items || [];
+                        var hasDuplicate = results.some(function (item) {
+                            return item.code
+                                && item.code.toLowerCase() === normalizedCode.toLowerCase()
+                                && (!blade.currentEntityId || item.id !== blade.currentEntityId);
+                        });
+                        resolve(!hasDuplicate);
+                    }, function () {
+                        resolve(true);
+                    });
+                });
+            };
+
             $scope.saveChanges = function () {
                 blade.isLoading = true;
                 if (!blade.currentEntity.code) {
@@ -54,18 +89,32 @@ angular.module('VirtoCommerce.AttributeGrid')
                     blade.currentEntity.id = blade.currentEntityId;
                 }
 
-                api.save(blade.currentEntity, function (data) {
-                    blade.currentEntity = data;
-                    blade.currentEntityId = data.id;
-                    blade.isNew = false;
-                    blade.title = data.name;
-                    blade.origEntity = angular.copy(blade.currentEntity);
-                    blade.isLoading = false;
-                    if (blade.parentBlade && blade.parentBlade.refresh) {
-                        blade.parentBlade.refresh();
+                var currentCode = blade.currentEntity.code;
+                $scope.checkCodeUnique(currentCode).then(function (isUnique) {
+                    if (!isUnique) {
+                        blade.isLoading = false;
+                        bladeNavigationService.setError(
+                            $translate.instant('AttributeGrid.messages.codeExists', { code: currentCode }),
+                            blade);
+                        return;
                     }
-                }, function () {
-                    blade.isLoading = false;
+
+                    api.save(blade.currentEntity, function (data) {
+                        blade.currentEntity = data;
+                        blade.currentEntityId = data.id;
+                        blade.isNew = false;
+                        blade.title = data.name;
+                        blade.origEntity = angular.copy(blade.currentEntity);
+                        blade.isLoading = false;
+                        if (blade.parentBlade && blade.parentBlade.refresh) {
+                            blade.parentBlade.refresh();
+                        }
+                    }, function (error) {
+                        blade.isLoading = false;
+                        bladeNavigationService.setError(
+                            $translate.instant('AttributeGrid.messages.saveError', { status: error.status }),
+                            blade);
+                    });
                 });
             };
 

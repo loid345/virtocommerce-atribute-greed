@@ -32,7 +32,8 @@
           "filterable": "Filter",
           "dictionary": "Dictionary",
           "usage": "Usage"
-        }
+        },
+        "multivalue": "Multivalue"
       },
       "detail": {
         "title": "Edit Attribute",
@@ -104,6 +105,8 @@
       }
     },
     "messages": {
+      "codeExists": "Attribute code \"{{code}}\" already exists.",
+      "saveError": "Save failed: {{status}}",
       "loadError": "Load failed: {{status}}",
       "deleteError": "Delete failed: {{status}}"
     },

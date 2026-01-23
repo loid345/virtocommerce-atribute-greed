@@ -32,7 +32,8 @@
           "filterable": "Фильтр",
           "dictionary": "Словарь",
           "usage": "Исп."
-        }
+        },
+        "multivalue": "Множественный"
       },
       "detail": {
         "title": "Редактирование атрибута",
@@ -104,6 +105,8 @@
       }
     },
     "messages": {
+      "codeExists": "Код атрибута \"{{code}}\" уже существует.",
+      "saveError": "Ошибка сохранения: {{status}}",
       "loadError": "Ошибка загрузки: {{status}}",
       "deleteError": "Ошибка удаления: {{status}}"
     },
