@@ -41,7 +41,45 @@
           </select>
         </div>
 
-        <div style="margin-left: auto; color: #666;">
+        <div class="btn-group" role="group" style="margin-left: auto;">
+          <button class="btn btn-default"
+                  type="button"
+                  ng-disabled="!selectedItems.length"
+                  ng-click="bulkUpdate({ isFilterable: true })">
+            <i class="fa fa-filter text-success"></i>
+            Сделать фильтруемыми
+          </button>
+          <button class="btn btn-default"
+                  type="button"
+                  ng-disabled="!selectedItems.length"
+                  ng-click="bulkUpdate({ isFilterable: false })">
+            <i class="fa fa-filter text-muted"></i>
+            Снять фильтр
+          </button>
+          <button class="btn btn-default"
+                  type="button"
+                  ng-disabled="!selectedItems.length"
+                  ng-click="bulkUpdate({ isRequired: true })">
+            <i class="fa fa-asterisk text-warning"></i>
+            Сделать обязательными
+          </button>
+          <button class="btn btn-default"
+                  type="button"
+                  ng-disabled="!selectedItems.length"
+                  ng-click="bulkUpdate({ isRequired: false })">
+            <i class="fa fa-asterisk text-muted"></i>
+            Снять обязательность
+          </button>
+          <button class="btn btn-danger"
+                  type="button"
+                  ng-disabled="!selectedItems.length"
+                  ng-click="bulkDelete()">
+            <i class="fa fa-trash"></i>
+            В корзину
+          </button>
+        </div>
+
+        <div style="color: #666;">
           Найдено: <strong>{{pageSettings.totalItems}}</strong>
         </div>
       </div>
@@ -50,6 +88,11 @@
         <table class="table table-hover table-striped" style="margin-bottom: 0;">
           <thead style="position: sticky; top: 0; background: #fff;">
             <tr>
+              <th style="width: 40px; text-align: center;">
+                <input type="checkbox"
+                       ng-checked="selectAll"
+                       ng-click="toggleSelectAll()">
+              </th>
               <th>Имя</th>
               <th style="width: 120px;">Тип</th>
               <th>Владелец</th>
@@ -64,6 +107,11 @@
                 ng-click="blade.selectNode(item)"
                 style="cursor: pointer;"
                 ng-class="{'info': selectedNodeId === item.id}">
+              <td style="text-align: center;">
+                <input type="checkbox"
+                       ng-checked="item.$selected"
+                       ng-click="toggleSelect(item, $event)">
+              </td>
               <td>
                 <strong>{{item.name}}</strong>
                 <div class="text-muted small">{{item.code}}</div>
@@ -103,7 +151,7 @@
             </tr>
 
             <tr ng-if="!blade.isLoading && (!blade.currentEntities || blade.currentEntities.length === 0)">
-              <td colspan="7" class="text-center text-muted" style="padding: 40px;">
+              <td colspan="8" class="text-center text-muted" style="padding: 40px;">
                 <i class="fa fa-inbox fa-2x"></i>
                 <p style="margin-top: 10px;">Атрибуты не найдены</p>
               </td>

@@ -17,6 +17,32 @@ angular.module('VirtoCommerce.AttributeGrid')
                 valueType: null,
             };
 
+            $scope.selectedItems = [];
+            $scope.selectAll = false;
+
+            function updateSelectedItems() {
+                $scope.selectedItems = (blade.currentEntities || []).filter(function (item) { return item.$selected; });
+                $scope.selectAll = $scope.selectedItems.length > 0
+                    && $scope.selectedItems.length === (blade.currentEntities || []).length;
+            }
+
+            $scope.toggleSelectAll = function () {
+                $scope.selectAll = !$scope.selectAll;
+                angular.forEach(blade.currentEntities, function (item) {
+                    item.$selected = $scope.selectAll;
+                });
+                updateSelectedItems();
+            };
+
+            $scope.toggleSelect = function (item, $event) {
+                if ($event) {
+                    $event.stopPropagation();
+                }
+
+                item.$selected = !item.$selected;
+                updateSelectedItems();
+            };
+
             $scope.catalogs = [];
 
             function loadCatalogs() {
@@ -33,6 +59,8 @@ angular.module('VirtoCommerce.AttributeGrid')
 
             blade.refresh = function () {
                 blade.isLoading = true;
+                $scope.selectedItems = [];
+                $scope.selectAll = false;
 
                 var criteria = {
                     keyword: $scope.filter.keyword,
@@ -46,6 +74,7 @@ angular.module('VirtoCommerce.AttributeGrid')
                     blade.isLoading = false;
                     blade.currentEntities = result.results || result.items || [];
                     $scope.pageSettings.totalItems = result.totalCount;
+                    updateSelectedItems();
                 }, function (error) {
                     blade.isLoading = false;
                     bladeNavigationService.setError('Ошибка загрузки: ' + error.status, blade);
@@ -92,6 +121,64 @@ angular.module('VirtoCommerce.AttributeGrid')
                         }
                     },
                 };
+                dialogService.showConfirmationDialog(dialog);
+            };
+
+            function getSelectedIds() {
+                return $scope.selectedItems.map(function (item) { return item.id; });
+            }
+
+            $scope.bulkUpdate = function (updatePayload) {
+                var ids = getSelectedIds();
+                if (!ids.length) {
+                    return;
+                }
+
+                var dialog = {
+                    id: 'confirmBulkUpdate',
+                    title: 'Массовое обновление',
+                    message: 'Применить изменения к выбранным атрибутам?',
+                    callback: function (confirmed) {
+                        if (!confirmed) {
+                            return;
+                        }
+
+                        blade.isLoading = true;
+                        api.bulkUpdate({
+                            ids: ids,
+                            isFilterable: updatePayload.isFilterable,
+                            isRequired: updatePayload.isRequired,
+                        }, function () {
+                            blade.refresh();
+                        });
+                    },
+                };
+
+                dialogService.showConfirmationDialog(dialog);
+            };
+
+            $scope.bulkDelete = function () {
+                var ids = getSelectedIds();
+                if (!ids.length) {
+                    return;
+                }
+
+                var dialog = {
+                    id: 'confirmBulkDelete',
+                    title: 'Массовое удаление',
+                    message: 'Удалить выбранные атрибуты в корзину?',
+                    callback: function (confirmed) {
+                        if (!confirmed) {
+                            return;
+                        }
+
+                        blade.isLoading = true;
+                        api.bulkDelete({ ids: ids }, function () {
+                            blade.refresh();
+                        });
+                    },
+                };
+
                 dialogService.showConfirmationDialog(dialog);
             };
 
