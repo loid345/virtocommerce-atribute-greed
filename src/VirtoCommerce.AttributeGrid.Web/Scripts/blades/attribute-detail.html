@@ -4,59 +4,86 @@
       <div class="form-group">
         <label class="control-label col-sm-3">Name</label>
         <div class="col-sm-9">
-          <input type="text" class="form-control" ng-model="blade.currentEntity.name" readonly>
+          <p class="form-control-static"><strong>{{blade.currentEntity.name}}</strong></p>
         </div>
       </div>
 
       <div class="form-group">
         <label class="control-label col-sm-3">Code</label>
         <div class="col-sm-9">
-          <input type="text" class="form-control" ng-model="blade.currentEntity.code" readonly>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="control-label col-sm-3">Owner</label>
-        <div class="col-sm-9">
-          <input type="text" class="form-control" ng-model="blade.currentEntity.ownerPath" readonly>
+          <p class="form-control-static"><code>{{blade.currentEntity.code}}</code></p>
         </div>
       </div>
 
       <div class="form-group">
         <label class="control-label col-sm-3">Type</label>
         <div class="col-sm-9">
-          <input type="text" class="form-control" ng-model="blade.currentEntity.valueType" readonly>
+          <p class="form-control-static">{{blade.currentEntity.valueType}}</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3">Owner</label>
+        <div class="col-sm-9">
+          <p class="form-control-static">
+            <i class="fa fa-folder-o"></i>
+            {{blade.currentEntity.ownerPath}}
+          </p>
         </div>
       </div>
 
       <div class="form-group">
         <label class="control-label col-sm-3">Scope</label>
         <div class="col-sm-9">
-          <input type="text" class="form-control" ng-model="blade.currentEntity.propertyType" readonly>
+          <p class="form-control-static">{{blade.currentEntity.propertyType}}</p>
         </div>
       </div>
 
       <hr>
 
       <div class="form-group">
-        <div class="col-sm-offset-3 col-sm-9">
+        <label class="control-label col-sm-3">Show in filters</label>
+        <div class="col-sm-9">
           <div class="checkbox">
             <label>
               <input type="checkbox" ng-model="blade.currentEntity.isFilterable">
-              Show in filters
+              IsFilterable
             </label>
           </div>
         </div>
       </div>
 
       <div class="form-group">
-        <div class="col-sm-offset-3 col-sm-9">
+        <label class="control-label col-sm-3">Required</label>
+        <div class="col-sm-9">
           <div class="checkbox">
             <label>
               <input type="checkbox" ng-model="blade.currentEntity.isRequired">
-              Required
+              IsRequired
             </label>
           </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3">Multivalue</label>
+        <div class="col-sm-9">
+          <p class="form-control-static">
+            <i class="fa" ng-class="blade.currentEntity.isMultivalue ? 'fa-check text-success' : 'fa-times text-muted'"></i>
+            {{blade.currentEntity.isMultivalue ? 'Yes' : 'No'}}
+          </p>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3">Usage</label>
+        <div class="col-sm-9">
+          <p class="form-control-static">
+            <span class="badge">{{blade.currentEntity.usageCount}}</span>
+            items
+          </p>
         </div>
       </div>
     </form>

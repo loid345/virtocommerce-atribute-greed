@@ -8,6 +8,10 @@
             <i class="fa fa-refresh"></i>
             Refresh
           </button>
+          <button class="btn" type="button" ng-click="openTrash()">
+            <i class="fa fa-trash"></i>
+            Trash
+          </button>
         </div>
       </div>
 
@@ -16,10 +20,21 @@
                class="attribute-grid__input"
                placeholder="Search attributes..."
                ng-model="filters.keyword">
-        <input type="text"
-               class="attribute-grid__input"
-               placeholder="Catalog id"
-               ng-model="filters.catalogId">
+        <div class="attribute-grid__catalog-select" ng-click="openCatalogSelector()">
+          <div class="attribute-grid__input attribute-grid__catalog-input">
+            <span class="attribute-grid__catalog-placeholder" ng-if="!filters.catalogName">All catalogs</span>
+            <span class="attribute-grid__catalog-name" ng-if="filters.catalogName">{{filters.catalogName}}</span>
+          </div>
+          <button class="attribute-grid__catalog-button" type="button">
+            <i class="fa fa-folder-open"></i>
+          </button>
+          <button class="attribute-grid__catalog-clear"
+                  type="button"
+                  ng-if="filters.catalogId"
+                  ng-click="clearCatalogFilter($event)">
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
         <select class="attribute-grid__input"
                 ng-model="filters.valueType"
                 ng-options="type.value as type.title for type in valueTypes">
@@ -41,6 +56,7 @@
             <th>Filter</th>
             <th>Required</th>
             <th>Usage</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -67,8 +83,10 @@
               <button class="btn" type="button" ng-click="openDetail(item)">
                 <i class="fa fa-pencil"></i>
               </button>
+              <button class="btn" type="button" ng-click="deleteProperty(item)">
+                <i class="fa fa-trash"></i>
+              </button>
             </td>
-            <td>{{item.usageCount}} items</td>
           </tr>
           <tr ng-if="!blade.currentEntities.length">
             <td colspan="9">No attributes found.</td>
