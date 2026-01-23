@@ -1,0 +1,178 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using VirtoCommerce.AttributeGrid.Core.Models;
+using VirtoCommerce.AttributeGrid.Core.Services;
+using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Search;
+using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.Platform.Core.Common;
+
+using CatalogPropertySearchCriteria = VirtoCommerce.CatalogModule.Core.Model.Search.PropertySearchCriteria;
+
+namespace VirtoCommerce.AttributeGrid.Data.Services;
+
+public class PropertyManagerService : IPropertyManagerService
+{
+    private readonly IPropertyService _propertyService;
+    private readonly IPropertySearchService _propertySearchService;
+    private readonly ICatalogService _catalogService;
+    private readonly ICategoryService _categoryService;
+
+    public PropertyManagerService(
+        IPropertyService propertyService,
+        IPropertySearchService propertySearchService,
+        ICatalogService catalogService,
+        ICategoryService categoryService)
+    {
+        _propertyService = propertyService;
+        _propertySearchService = propertySearchService;
+        _catalogService = catalogService;
+        _categoryService = categoryService;
+    }
+
+    public async Task<GenericSearchResult<PropertyListItem>> SearchPropertiesAsync(PropertySearchCriteria criteria)
+    {
+        var searchCriteria = new CatalogPropertySearchCriteria
+        {
+            Keyword = criteria.Keyword,
+            CatalogIds = string.IsNullOrEmpty(criteria.CatalogId)
+                ? null
+                : new[] { criteria.CatalogId },
+            Skip = criteria.Skip,
+            Take = criteria.Take,
+            Sort = criteria.Sort,
+        };
+
+        var searchResult = await _propertySearchService.SearchPropertiesAsync(searchCriteria);
+        var items = new List<PropertyListItem>();
+
+        foreach (var property in searchResult.Results)
+        {
+            if (!string.IsNullOrEmpty(criteria.CategoryId)
+                && !string.Equals(property.CategoryId, criteria.CategoryId, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (!string.IsNullOrEmpty(criteria.ValueType)
+                && !string.Equals(property.ValueType.ToString(), criteria.ValueType, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (!string.IsNullOrEmpty(criteria.PropertyType)
+                && !string.Equals(property.Type.ToString(), criteria.PropertyType, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (criteria.IsFilterable.HasValue && property.IsFilterable != criteria.IsFilterable.Value)
+            {
+                continue;
+            }
+
+            if (criteria.IsDictionary.HasValue && property.Dictionary != criteria.IsDictionary.Value)
+            {
+                continue;
+            }
+
+            var item = await MapToListItemAsync(property);
+            items.Add(item);
+        }
+
+        return new GenericSearchResult<PropertyListItem>
+        {
+            TotalCount = searchResult.TotalCount,
+            Results = items,
+        };
+    }
+
+    public async Task<PropertyListItem> GetPropertyByIdAsync(string propertyId)
+    {
+        var properties = await _propertyService.GetByIdsAsync(new[] { propertyId });
+        var property = properties.FirstOrDefault();
+
+        return property == null ? null : await MapToListItemAsync(property);
+    }
+
+    public async Task UpdatePropertyAsync(string propertyId, bool? isFilterable = null, bool? isRequired = null)
+    {
+        var properties = await _propertyService.GetByIdsAsync(new[] { propertyId });
+        var property = properties.FirstOrDefault();
+
+        if (property == null)
+        {
+            return;
+        }
+
+        if (isFilterable.HasValue)
+        {
+            property.IsFilterable = isFilterable.Value;
+        }
+
+        if (isRequired.HasValue)
+        {
+            property.IsRequired = isRequired.Value;
+        }
+
+        await _propertyService.SaveChangesAsync(new[] { property });
+    }
+
+    private async Task<PropertyListItem> MapToListItemAsync(Property property)
+    {
+        var item = new PropertyListItem
+        {
+            Id = property.Id,
+            Name = property.Name,
+            Code = property.Name,
+            ValueType = property.ValueType.ToString(),
+            PropertyType = property.Type.ToString(),
+            CatalogId = property.CatalogId,
+            CategoryId = property.CategoryId,
+            IsFilterable = property.IsFilterable,
+            IsDictionary = property.Dictionary,
+            IsRequired = property.IsRequired,
+            IsMultivalue = property.Multivalue,
+            UsageCount = 0,
+        };
+
+        item.OwnerPath = await BuildOwnerPathAsync(property);
+
+        return item;
+    }
+
+    private async Task<string> BuildOwnerPathAsync(Property property)
+    {
+        var parts = new List<string>();
+
+        if (!string.IsNullOrEmpty(property.CatalogId))
+        {
+            var catalogs = await _catalogService.GetByIdsAsync(
+                new[] { property.CatalogId },
+                CatalogResponseGroup.Info.ToString());
+
+            var catalog = catalogs.FirstOrDefault();
+            if (catalog != null)
+            {
+                parts.Add(catalog.Name);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(property.CategoryId))
+        {
+            var categories = await _categoryService.GetByIdsAsync(
+                new[] { property.CategoryId },
+                CategoryResponseGroup.Info.ToString());
+
+            var category = categories.FirstOrDefault();
+            if (category != null)
+            {
+                parts.Add(category.Name);
+            }
+        }
+
+        return string.Join(" / ", parts);
+    }
+}
