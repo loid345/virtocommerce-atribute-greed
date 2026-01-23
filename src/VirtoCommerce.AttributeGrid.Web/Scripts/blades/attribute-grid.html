@@ -1,0 +1,55 @@
+<div class="blade-content">
+  <div class="blade-inner">
+    <div class="inner-block attribute-grid">
+      <div class="attribute-grid__header">
+        <h2 class="attribute-grid__title">Attributes</h2>
+        <div class="attribute-grid__actions">
+          <button class="btn">🗑️ Trash</button>
+          <button class="btn btn-primary">+ Create</button>
+        </div>
+      </div>
+
+      <div class="attribute-grid__filters">
+        <input type="text" class="attribute-grid__input" placeholder="Search attributes..." ng-model="blade.filters.keyword">
+        <select class="attribute-grid__input" ng-model="blade.filters.catalog" ng-options="catalog for catalog in blade.catalogs"></select>
+        <select class="attribute-grid__input" ng-model="blade.filters.type" ng-options="type for type in blade.types"></select>
+      </div>
+
+      <table class="table attribute-grid__table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Type</th>
+            <th>Scope</th>
+            <th>Owner</th>
+            <th>Filter</th>
+            <th>Usage</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in blade.filteredItems">
+            <td><strong>{{item.name}}</strong></td>
+            <td>{{item.code}}</td>
+            <td>{{item.type}}</td>
+            <td>{{item.scope}}</td>
+            <td>{{item.ownerPath}}</td>
+            <td>
+              <span ng-if="item.isFilterable">✓</span>
+              <span ng-if="!item.isFilterable">—</span>
+            </td>
+            <td>{{item.usage}} products</td>
+            <td class="attribute-grid__row-actions">
+              <button class="btn">✎</button>
+              <button class="btn">🗑️</button>
+            </td>
+          </tr>
+          <tr ng-if="!blade.filteredItems.length">
+            <td colspan="8">No attributes found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
