@@ -240,6 +240,13 @@ angular.module('VirtoCommerce.AttributeGrid')
                     canExecuteMethod: function () { return !blade.isLoading; },
                 },
                 {
+                    name: 'AttributeGrid.commands.deleteSelected',
+                    icon: 'fa fa-trash',
+                    executeMethod: $scope.bulkDelete,
+                    canExecuteMethod: function () { return $scope.selectedItems.length > 0; },
+                    permission: 'attribute-grid:delete',
+                },
+                {
                     name: 'AttributeGrid.commands.trash',
                     icon: 'fa fa-trash-o',
                     executeMethod: openTrash,

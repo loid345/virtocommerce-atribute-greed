@@ -162,16 +162,7 @@
                 <div class="text-muted small">{{item.code}}</div>
               </td>
               <td>
-                <span class="label" ng-class="{
-                    'label-info': item.valueType === 'ShortText' || item.valueType === 'LongText',
-                    'label-success': item.valueType === 'Boolean',
-                    'label-warning': item.valueType === 'Number',
-                    'label-default': item.valueType === 'DateTime'
-                }">{{item.valueType}}</span>
-                <span ng-if="item.isMultivalue"
-                      class="badge"
-                      title="{{ 'AttributeGrid.blades.list.multivalue' | translate }}"
-                      style="background:#555; margin-left:2px;">M</span>
+                <div ng-include="'Modules/$(VirtoCommerce.AttributeGrid)/Scripts/blades/list.cell.type.html'"></div>
               </td>
               <td>
                 <span class="text-muted">{{item.ownerPath || '—'}}</span>

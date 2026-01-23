@@ -1,0 +1,20 @@
+<div class="ui-grid-cell-contents">
+    <span class="label label-success" ng-if="item.valueType === 'Boolean'">{{item.valueType}}</span>
+
+    <span class="label label-warning" ng-if="item.valueType === 'Integer' || item.valueType === 'Decimal' || item.valueType === 'Number'">{{item.valueType}}</span>
+
+    <span class="label label-info" ng-if="item.valueType === 'ShortText' || item.valueType === 'LongText'">{{item.valueType}}</span>
+
+    <span class="label label-default" ng-if="item.valueType === 'DateTime'">{{item.valueType}}</span>
+    <span class="label label-primary" ng-if="item.isDictionary">{{item.valueType}}</span>
+
+    <span class="label label-default"
+          ng-if="['Boolean','Integer','Decimal','Number','ShortText','LongText','DateTime'].indexOf(item.valueType) === -1 && !item.isDictionary">
+        {{item.valueType}}
+    </span>
+
+    <i class="fa fa-th-list"
+       title="{{ 'AttributeGrid.blades.list.multivalue' | translate }}"
+       ng-if="item.isMultivalue"
+       style="margin-left:5px; color:#888;"></i>
+</div>
