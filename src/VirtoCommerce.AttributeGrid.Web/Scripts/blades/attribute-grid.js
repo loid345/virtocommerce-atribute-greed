@@ -1,94 +1,89 @@
 angular.module('VirtoCommerce.AttributeGrid')
-    .controller('VirtoCommerce.AttributeGrid.attributeGridController', ['$scope', function ($scope) {
-        var blade = $scope.blade;
-        blade.title = 'Attribute Grid';
-        blade.isLoading = false;
+    .controller('VirtoCommerce.AttributeGrid.attributeGridController', [
+        '$scope',
+        'VirtoCommerce.AttributeGrid.webApi',
+        'platformWebApp.bladeNavigationService',
+        function ($scope, api, bladeNavigationService) {
+            var blade = $scope.blade;
+            blade.title = 'Attribute Grid';
 
-        blade.filters = {
-            keyword: '',
-            catalog: 'All',
-            type: 'All',
-        };
+            $scope.filters = {
+                keyword: '',
+                catalogId: '',
+                valueType: '',
+                propertyType: '',
+            };
 
-        blade.catalogs = [
-            'All',
-            'Electronics',
-            'Appliances',
-            'Fashion',
-        ];
+            $scope.valueTypes = [
+                { value: '', title: 'All types' },
+                { value: 'ShortText', title: 'Text' },
+                { value: 'Number', title: 'Number' },
+                { value: 'DateTime', title: 'Date' },
+                { value: 'Boolean', title: 'Boolean' },
+            ];
 
-        blade.types = [
-            'All',
-            'Text',
-            'Number',
-            'Dictionary',
-            'Date',
-            'Boolean',
-        ];
+            $scope.propertyTypes = [
+                { value: '', title: 'All scopes' },
+                { value: 'Product', title: 'Product' },
+                { value: 'Variation', title: 'Variation' },
+            ];
 
-        blade.items = [
-            {
-                name: 'Brand',
-                code: 'brand',
-                type: 'Dictionary',
-                scope: 'Product',
-                ownerPath: 'Electronics',
-                catalog: 'Electronics',
-                isFilterable: true,
-                usage: 410,
-            },
-            {
-                name: 'Screen Size',
-                code: 'screen',
-                type: 'Number',
-                scope: 'Product',
-                ownerPath: 'Electronics / Phones',
-                catalog: 'Electronics',
-                isFilterable: true,
-                usage: 128,
-            },
-            {
-                name: 'Color',
-                code: 'color',
-                type: 'Dictionary',
-                scope: 'Variant',
-                ownerPath: 'Fashion',
-                catalog: 'Fashion',
-                isFilterable: true,
-                usage: 850,
-            },
-            {
-                name: 'Weight',
-                code: 'weight',
-                type: 'Number',
-                scope: 'Product',
-                ownerPath: 'Appliances / Kitchen',
-                catalog: 'Appliances',
-                isFilterable: false,
-                usage: 12,
-            },
-        ];
+            $scope.pageSettings = {
+                currentPage: 1,
+                itemsPerPageCount: 20,
+                totalItems: 0,
+            };
 
-        blade.updateFiltered = function () {
-            var keyword = (blade.filters.keyword || '').toLowerCase();
-            var selectedCatalog = blade.filters.catalog;
-            var selectedType = blade.filters.type;
+            $scope.pageSettings.pageChanged = function () {
+                blade.refresh();
+            };
 
-            blade.filteredItems = blade.items.filter(function (item) {
-                var matchesKeyword = !keyword ||
-                    item.name.toLowerCase().indexOf(keyword) !== -1 ||
-                    item.code.toLowerCase().indexOf(keyword) !== -1;
-                var matchesCatalog = selectedCatalog === 'All' || item.catalog === selectedCatalog;
-                var matchesType = selectedType === 'All' || item.type === selectedType;
-                return matchesKeyword && matchesCatalog && matchesType;
+            blade.refresh = function () {
+                blade.isLoading = true;
+
+                var criteria = {
+                    keyword: $scope.filters.keyword,
+                    catalogId: $scope.filters.catalogId,
+                    valueType: $scope.filters.valueType,
+                    propertyType: $scope.filters.propertyType,
+                    skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
+                    take: $scope.pageSettings.itemsPerPageCount,
+                };
+
+                api.search(criteria, function (result) {
+                    blade.isLoading = false;
+                    $scope.pageSettings.totalItems = result.totalCount;
+                    blade.currentEntities = result.results || [];
+                });
+            };
+
+            $scope.toggleFilterable = function (item) {
+                api.update({ id: item.id }, { isFilterable: !item.isFilterable }, function () {
+                    item.isFilterable = !item.isFilterable;
+                });
+            };
+
+            $scope.openDetail = function (item) {
+                var detailBlade = {
+                    id: 'attributeDetail',
+                    title: item.name,
+                    controller: 'VirtoCommerce.AttributeGrid.attributeDetailController',
+                    template: 'Modules/$(VirtoCommerce.AttributeGrid)/Scripts/blades/attribute-detail.html',
+                    currentEntityId: item.id,
+                };
+                bladeNavigationService.showBlade(detailBlade, blade);
+            };
+
+            $scope.$watchGroup([
+                function () { return $scope.filters.keyword; },
+                function () { return $scope.filters.catalogId; },
+                function () { return $scope.filters.valueType; },
+                function () { return $scope.filters.propertyType; },
+            ], function () {
+                $scope.pageSettings.currentPage = 1;
+                blade.refresh();
             });
-        };
 
-        $scope.$watchGroup([
-            function () { return blade.filters.keyword; },
-            function () { return blade.filters.catalog; },
-            function () { return blade.filters.type; },
-        ], blade.updateFiltered);
-
-        blade.updateFiltered();
-    }]);
+            blade.refresh();
+        }
+    ]);
