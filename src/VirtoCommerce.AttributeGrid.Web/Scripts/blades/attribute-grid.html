@@ -41,7 +41,6 @@
             <th>Filter</th>
             <th>Required</th>
             <th>Usage</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -69,6 +68,7 @@
                 <i class="fa fa-pencil"></i>
               </button>
             </td>
+            <td>{{item.usageCount}} items</td>
           </tr>
           <tr ng-if="!blade.currentEntities.length">
             <td colspan="9">No attributes found.</td>
