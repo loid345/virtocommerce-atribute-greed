@@ -2,7 +2,10 @@
 <Project>
   <!-- These properties will be shared for all projects -->
   <PropertyGroup>
-    <VersionPrefix>{ModuleVersion}</VersionPrefix>
+    <ModuleVersion Condition=" '$(ModuleVersion)' == '' ">3.0.0</ModuleVersion>
+    <PlatformVersion Condition=" '$(PlatformVersion)' == '' ">3.*</PlatformVersion>
+    <CatalogVersion Condition=" '$(CatalogVersion)' == '' ">3.*</CatalogVersion>
+    <VersionPrefix>$(ModuleVersion)</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <VersionSuffix Condition=" '$(VersionSuffix)' != '' AND '$(BuildNumber)' != '' ">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
   </PropertyGroup>
