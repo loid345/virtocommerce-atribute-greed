@@ -4,21 +4,34 @@
       <div class="form-group">
         <label class="control-label col-sm-3">Name</label>
         <div class="col-sm-9">
-          <p class="form-control-static"><strong>{{blade.currentEntity.name}}</strong></p>
+          <p class="form-control-static" ng-if="!blade.isNew">
+            <strong>{{blade.currentEntity.name}}</strong>
+          </p>
+          <input class="form-control" ng-if="blade.isNew" ng-model="blade.currentEntity.name" placeholder="Введите имя атрибута">
         </div>
       </div>
 
       <div class="form-group">
         <label class="control-label col-sm-3">Code</label>
         <div class="col-sm-9">
-          <p class="form-control-static"><code>{{blade.currentEntity.code}}</code></p>
+          <p class="form-control-static" ng-if="!blade.isNew">
+            <code>{{blade.currentEntity.code}}</code>
+          </p>
+          <input class="form-control" ng-if="blade.isNew" ng-model="blade.currentEntity.code" placeholder="Code (если пусто — будет как Name)">
         </div>
       </div>
 
       <div class="form-group">
         <label class="control-label col-sm-3">Type</label>
         <div class="col-sm-9">
-          <p class="form-control-static">{{blade.currentEntity.valueType}}</p>
+          <p class="form-control-static" ng-if="!blade.isNew">{{blade.currentEntity.valueType}}</p>
+          <select class="form-control" ng-if="blade.isNew" ng-model="blade.currentEntity.valueType">
+            <option value="ShortText">ShortText</option>
+            <option value="LongText">LongText</option>
+            <option value="Number">Number</option>
+            <option value="DateTime">DateTime</option>
+            <option value="Boolean">Boolean</option>
+          </select>
         </div>
       </div>
 
@@ -35,7 +48,12 @@
       <div class="form-group">
         <label class="control-label col-sm-3">Scope</label>
         <div class="col-sm-9">
-          <p class="form-control-static">{{blade.currentEntity.propertyType}}</p>
+          <p class="form-control-static" ng-if="!blade.isNew">{{blade.currentEntity.propertyType}}</p>
+          <select class="form-control" ng-if="blade.isNew" ng-model="blade.currentEntity.propertyType">
+            <option value="Product">Product</option>
+            <option value="Category">Category</option>
+            <option value="Catalog">Catalog</option>
+          </select>
         </div>
       </div>
 

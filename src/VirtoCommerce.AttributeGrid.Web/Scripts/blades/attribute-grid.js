@@ -9,7 +9,7 @@ angular.module('VirtoCommerce.AttributeGrid')
             var blade = $scope.blade;
             blade.title = 'Менеджер Атрибутов';
             blade.headIcon = 'fa fa-tags';
-            blade.updatePermission = 'propertiesManager:update';
+            blade.updatePermission = 'attribute-grid:update';
 
             $scope.filter = {
                 keyword: '',
@@ -115,8 +115,11 @@ angular.module('VirtoCommerce.AttributeGrid')
                     callback: function (confirmed) {
                         if (confirmed) {
                             blade.isLoading = true;
-                            api.remove({ id: item.id }, function () {
+                            api.moveToTrash([item.id], function () {
                                 blade.refresh();
+                            }, function (error) {
+                                blade.isLoading = false;
+                                bladeNavigationService.setError('Ошибка удаления: ' + error.status, blade);
                             });
                         }
                     },
@@ -173,8 +176,11 @@ angular.module('VirtoCommerce.AttributeGrid')
                         }
 
                         blade.isLoading = true;
-                        api.bulkDelete({ ids: ids }, function () {
+                        api.moveToTrash(ids, function () {
                             blade.refresh();
+                        }, function (error) {
+                            blade.isLoading = false;
+                            bladeNavigationService.setError('Ошибка удаления: ' + error.status, blade);
                         });
                     },
                 };
@@ -193,6 +199,22 @@ angular.module('VirtoCommerce.AttributeGrid')
             };
 
             blade.toolbarCommands = [
+                {
+                    name: 'platform.commands.add',
+                    icon: 'fa fa-plus',
+                    executeMethod: function () {
+                        var newBlade = {
+                            id: 'attributeDetailNew',
+                            title: 'Новый атрибут',
+                            controller: 'VirtoCommerce.AttributeGrid.attributeDetailController',
+                            template: 'Modules/$(VirtoCommerce.AttributeGrid)/Scripts/blades/attribute-detail.html',
+                            currentEntityId: null,
+                        };
+                        bladeNavigationService.showBlade(newBlade, blade);
+                    },
+                    canExecuteMethod: function () { return true; },
+                    permission: 'attribute-grid:create',
+                },
                 {
                     name: 'platform.commands.refresh',
                     icon: 'fa fa-refresh',
