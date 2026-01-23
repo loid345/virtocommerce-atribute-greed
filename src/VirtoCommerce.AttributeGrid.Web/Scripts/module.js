@@ -27,13 +27,13 @@ angular.module(moduleName, ['virtoCommerce.catalogModule'])
                 });
         }
     ])
-    .run(['platformWebApp.mainMenuService', '$state',
-        function (mainMenuService, $state) {
+    .run(['platformWebApp.mainMenuService', '$state', '$translate',
+        function (mainMenuService, $state, $translate) {
             //Register module in main menu
             var menuItem = {
                 path: 'browse/attribute-grid',
                 icon: 'fa fa-cube',
-                title: 'Attribute Grid',
+                title: $translate.instant('AttributeGrid.mainMenu.title'),
                 priority: 100,
                 action: function () { $state.go('workspace.AttributeGridState'); },
                 permission: 'attribute-grid:access',
