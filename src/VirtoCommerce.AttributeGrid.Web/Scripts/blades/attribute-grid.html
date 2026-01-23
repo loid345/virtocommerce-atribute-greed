@@ -1,106 +1,125 @@
 <div class="blade-content">
   <div class="blade-inner">
-    <div class="inner-block attribute-grid">
-      <div class="attribute-grid__header">
-        <h2 class="attribute-grid__title">Attributes</h2>
-        <div class="attribute-grid__actions">
-          <button class="btn" type="button" ng-click="blade.refresh()">
-            <i class="fa fa-refresh"></i>
-            Refresh
-          </button>
-          <button class="btn" type="button" ng-click="openTrash()">
-            <i class="fa fa-trash"></i>
-            Trash
-          </button>
-        </div>
-      </div>
-
-      <div class="attribute-grid__filters">
-        <input type="text"
-               class="attribute-grid__input"
-               placeholder="Search attributes..."
-               ng-model="filters.keyword">
-        <div class="attribute-grid__catalog-select" ng-click="openCatalogSelector()">
-          <div class="attribute-grid__input attribute-grid__catalog-input">
-            <span class="attribute-grid__catalog-placeholder" ng-if="!filters.catalogName">All catalogs</span>
-            <span class="attribute-grid__catalog-name" ng-if="filters.catalogName">{{filters.catalogName}}</span>
+    <div class="inner-block">
+      <div class="form-inline" style="padding: 10px; background: #f5f5f5; border-bottom: 1px solid #ddd; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+        <div class="form-group">
+          <div class="input-group" style="width: 250px;">
+            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+            <input type="text"
+                   class="form-control"
+                   ng-model="filter.keyword"
+                   ng-model-options="{ debounce: 400 }"
+                   ng-change="blade.refresh()"
+                   placeholder="Поиск по имени...">
           </div>
-          <button class="attribute-grid__catalog-button" type="button">
-            <i class="fa fa-folder-open"></i>
-          </button>
-          <button class="attribute-grid__catalog-clear"
-                  type="button"
-                  ng-if="filters.catalogId"
-                  ng-click="clearCatalogFilter($event)">
-            <i class="fa fa-times"></i>
-          </button>
         </div>
-        <select class="attribute-grid__input"
-                ng-model="filters.valueType"
-                ng-options="type.value as type.title for type in valueTypes">
-        </select>
-        <select class="attribute-grid__input"
-                ng-model="filters.propertyType"
-                ng-options="type.value as type.title for type in propertyTypes">
-        </select>
+
+        <div class="form-group">
+          <select class="form-control"
+                  ng-model="filter.catalogId"
+                  ng-change="blade.refresh()"
+                  style="width: 180px;">
+            <option value="">— Все каталоги —</option>
+            <option ng-repeat="cat in catalogs" value="{{cat.id}}">{{cat.name}}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <select class="form-control"
+                  ng-model="filter.valueType"
+                  ng-change="blade.refresh()"
+                  style="width: 140px;">
+            <option value="">— Все типы —</option>
+            <option value="ShortText">Текст</option>
+            <option value="LongText">Длинный текст</option>
+            <option value="Number">Число</option>
+            <option value="DateTime">Дата</option>
+            <option value="Boolean">Да/Нет</option>
+          </select>
+        </div>
+
+        <div style="margin-left: auto; color: #666;">
+          Найдено: <strong>{{pageSettings.totalItems}}</strong>
+        </div>
       </div>
 
-      <table class="table attribute-grid__table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Code</th>
-            <th>Type</th>
-            <th>Scope</th>
-            <th>Owner</th>
-            <th>Filter</th>
-            <th>Required</th>
-            <th>Usage</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="item in blade.currentEntities">
-            <td><strong>{{item.name}}</strong></td>
-            <td>{{item.code}}</td>
-            <td>
-              <span ng-if="item.isDictionary" class="label label-info">Dictionary</span>
-              <span ng-if="!item.isDictionary">{{item.valueType}}</span>
-            </td>
-            <td>{{item.propertyType}}</td>
-            <td>{{item.ownerPath}}</td>
-            <td>
-              <input type="checkbox"
-                     ng-checked="item.isFilterable"
-                     ng-click="toggleFilterable(item)">
-            </td>
-            <td>
-              <span ng-if="item.isRequired">✓</span>
-              <span ng-if="!item.isRequired">—</span>
-            </td>
-            <td>{{item.usageCount}} items</td>
-            <td class="attribute-grid__row-actions">
-              <button class="btn" type="button" ng-click="openDetail(item)">
-                <i class="fa fa-pencil"></i>
-              </button>
-              <button class="btn" type="button" ng-click="deleteProperty(item)">
-                <i class="fa fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-          <tr ng-if="!blade.currentEntities.length">
-            <td colspan="9">No attributes found.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive" style="max-height: calc(100vh - 280px); overflow-y: auto;">
+        <table class="table table-hover table-striped" style="margin-bottom: 0;">
+          <thead style="position: sticky; top: 0; background: #fff;">
+            <tr>
+              <th>Имя</th>
+              <th style="width: 120px;">Тип</th>
+              <th>Владелец</th>
+              <th style="width: 70px; text-align: center;">Фильтр</th>
+              <th style="width: 70px; text-align: center;">Словарь</th>
+              <th style="width: 60px; text-align: right;">Исп.</th>
+              <th style="width: 50px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="item in blade.currentEntities"
+                ng-click="blade.selectNode(item)"
+                style="cursor: pointer;"
+                ng-class="{'info': selectedId === item.id}">
+              <td>
+                <strong>{{item.name}}</strong>
+                <div class="text-muted small">{{item.code}}</div>
+              </td>
+              <td>
+                <span class="label" ng-class="{
+                    'label-info': item.valueType === 'ShortText',
+                    'label-success': item.valueType === 'Number',
+                    'label-warning': item.valueType === 'DateTime',
+                    'label-default': item.valueType === 'Boolean'
+                }">{{item.valueType}}</span>
+              </td>
+              <td>
+                <span class="text-muted">{{item.ownerPath || '—'}}</span>
+              </td>
+              <td style="text-align: center;">
+                <i class="fa"
+                   ng-class="item.isFilterable ? 'fa-check text-success' : 'fa-times text-muted'"
+                   ng-click="toggleFilterable(item, $event)"
+                   style="cursor: pointer;"
+                   title="Кликните для переключения"></i>
+              </td>
+              <td style="text-align: center;">
+                <i class="fa fa-book text-info" ng-if="item.isDictionary" title="Словарь"></i>
+                <span ng-if="!item.isDictionary">—</span>
+              </td>
+              <td style="text-align: right;">
+                <span class="badge">{{item.usageCount || 0}}</span>
+              </td>
+              <td>
+                <button class="btn btn-xs btn-danger"
+                        ng-click="deleteItem(item); $event.stopPropagation();"
+                        title="Удалить в корзину">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </td>
+            </tr>
 
-      <div class="text-center">
-        <ul uib-pagination
+            <tr ng-if="!blade.isLoading && (!blade.currentEntities || blade.currentEntities.length === 0)">
+              <td colspan="7" class="text-center text-muted" style="padding: 40px;">
+                <i class="fa fa-inbox fa-2x"></i>
+                <p style="margin-top: 10px;">Атрибуты не найдены</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-center" style="padding: 10px; border-top: 1px solid #ddd;" ng-if="pageSettings.totalItems > pageSettings.itemsPerPageCount">
+        <uib-pagination
             total-items="pageSettings.totalItems"
             ng-model="pageSettings.currentPage"
             items-per-page="pageSettings.itemsPerPageCount"
-            ng-change="pageSettings.pageChanged()">
-        </ul>
+            ng-change="blade.refresh()"
+            max-size="7"
+            boundary-links="true"
+            class="pagination-sm"
+            style="margin: 0;">
+        </uib-pagination>
       </div>
     </div>
   </div>

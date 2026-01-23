@@ -26,6 +26,14 @@
   <assemblyFile>VirtoCommerce.AttributeGrid.Web.dll</assemblyFile>
   <moduleType>VirtoCommerce.AttributeGrid.Web.Module, VirtoCommerce.AttributeGrid.Web</moduleType>
 
+  <scripts>
+    <directory virtualPath="$/Scripts" searchPattern="*.js" searchSubdirectories="true" />
+  </scripts>
+
+  <styles>
+    <directory virtualPath="$/Content" searchPattern="*.css" searchSubdirectories="true" />
+  </styles>
+
   <releaseNotes>First version.</releaseNotes>
   <copyright>Copyright © 2025 VirtoCommerce. All rights reserved</copyright>
   <tags>extension module</tags>
