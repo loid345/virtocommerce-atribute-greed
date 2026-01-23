@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+  <id>VirtoCommerce.AttributeGrid</id>
+  <version>{ModuleVersion}</version>
+  <version-tag></version-tag>
+
+  <platformVersion>{PlatformVersion}</platformVersion>
+  <dependencies>
+    <!--<dependency id="VirtoCommerce.Core" version="{CoreVersion}" />-->
+  </dependencies>
+
+  <title>Attribute Grid</title>
+  <description>Attribute Grid</description>
+
+  <authors>
+    <author>VirtoCommerce</author>
+  </authors>
+  <owners>
+    <owner>VirtoCommerce</owner>
+  </owners>
+
+  <projectUrl>https://github.com/VirtoCommerce/vc-module-attribute-grid</projectUrl>
+  <iconUrl>Modules/$(VirtoCommerce.AttributeGrid)/Content/logo.png</iconUrl>
+  <requireLicenseAcceptance>false</requireLicenseAcceptance>
+
+  <assemblyFile>VirtoCommerce.AttributeGrid.Web.dll</assemblyFile>
+  <moduleType>VirtoCommerce.AttributeGrid.Web.Module, VirtoCommerce.AttributeGrid.Web</moduleType>
+
+  <releaseNotes>First version.</releaseNotes>
+  <copyright>Copyright © 2025 VirtoCommerce. All rights reserved</copyright>
+  <tags>extension module</tags>
+  <useFullTypeNameInSwagger>false</useFullTypeNameInSwagger>
+</module>

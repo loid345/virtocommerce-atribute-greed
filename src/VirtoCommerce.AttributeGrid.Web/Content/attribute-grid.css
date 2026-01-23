@@ -1,0 +1,44 @@
+.attribute-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.attribute-grid__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.attribute-grid__title {
+  margin: 0;
+}
+
+.attribute-grid__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.attribute-grid__filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 180px 180px;
+  gap: 12px;
+}
+
+.attribute-grid__input {
+  padding: 6px 10px;
+  border: 1px solid #d7d7d7;
+  border-radius: 4px;
+}
+
+.attribute-grid__table td,
+.attribute-grid__table th {
+  vertical-align: middle;
+}
+
+.attribute-grid__row-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}

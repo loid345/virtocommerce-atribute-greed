@@ -1,0 +1,24 @@
+{
+  "AttributeGrid": {
+    "blades": {
+      "attribute-grid": {
+        "title": "Attribute Grid"
+      }
+    }
+  },
+  "permissions": {
+    "attribute-grid:access": "Open Attribute Grid menu",
+    "attribute-grid:create": "Create Attribute Grid data",
+    "attribute-grid:read": "View Attribute Grid data",
+    "attribute-grid:update": "Update Attribute Grid data",
+    "attribute-grid:delete": "Delete Attribute Grid data"
+  },
+  "settings": {
+    "AttributeGrid": {
+      "Enabled": {
+        "title": "Attribute Grid Enabled",
+        "description": "Attribute Grid Enabled setting"
+      }
+    }
+  }
+}
