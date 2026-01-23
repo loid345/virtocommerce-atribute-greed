@@ -10,7 +10,7 @@
                    ng-model="filter.keyword"
                    ng-model-options="{ debounce: 400 }"
                    ng-change="blade.refresh()"
-                   placeholder="Поиск по имени...">
+                   placeholder="{{ 'AttributeGrid.blades.list.placeholders.search' | translate }}">
           </div>
         </div>
 
@@ -18,7 +18,7 @@
           <ui-select ng-model="filter.catalogId"
                      ng-change="blade.refresh()"
                      theme="select2">
-            <ui-select-match allow-clear="true" placeholder="— Все каталоги —">
+            <ui-select-match allow-clear="true" placeholder="{{ 'AttributeGrid.blades.list.placeholders.allCatalogs' | translate }}">
               {{$select.selected.name}}
             </ui-select-match>
             <ui-select-choices repeat="cat.id as cat in catalogs | filter: $select.search">
@@ -32,12 +32,12 @@
                   ng-model="filter.valueType"
                   ng-change="blade.refresh()"
                   style="width: 140px;">
-            <option value="">— Все типы —</option>
-            <option value="ShortText">Текст</option>
-            <option value="LongText">Длинный текст</option>
-            <option value="Number">Число</option>
-            <option value="DateTime">Дата</option>
-            <option value="Boolean">Да/Нет</option>
+            <option value="">{{ 'AttributeGrid.blades.list.placeholders.allTypes' | translate }}</option>
+            <option value="ShortText">{{ 'AttributeGrid.blades.list.valueTypes.shortText' | translate }}</option>
+            <option value="LongText">{{ 'AttributeGrid.blades.list.valueTypes.longText' | translate }}</option>
+            <option value="Number">{{ 'AttributeGrid.blades.list.valueTypes.number' | translate }}</option>
+            <option value="DateTime">{{ 'AttributeGrid.blades.list.valueTypes.dateTime' | translate }}</option>
+            <option value="Boolean">{{ 'AttributeGrid.blades.list.valueTypes.boolean' | translate }}</option>
           </select>
         </div>
 
@@ -47,40 +47,44 @@
                   ng-disabled="!selectedItems.length"
                   ng-click="bulkUpdate({ isFilterable: true })">
             <i class="fa fa-filter text-success"></i>
-            Сделать фильтруемыми
+            {{ 'AttributeGrid.commands.enableFilter' | translate }}
           </button>
           <button class="btn btn-default"
                   type="button"
                   ng-disabled="!selectedItems.length"
                   ng-click="bulkUpdate({ isFilterable: false })">
             <i class="fa fa-filter text-muted"></i>
-            Снять фильтр
+            {{ 'AttributeGrid.commands.disableFilter' | translate }}
           </button>
           <button class="btn btn-default"
                   type="button"
                   ng-disabled="!selectedItems.length"
                   ng-click="bulkUpdate({ isRequired: true })">
             <i class="fa fa-asterisk text-warning"></i>
-            Сделать обязательными
+            {{ 'AttributeGrid.commands.enableRequired' | translate }}
           </button>
           <button class="btn btn-default"
                   type="button"
                   ng-disabled="!selectedItems.length"
                   ng-click="bulkUpdate({ isRequired: false })">
             <i class="fa fa-asterisk text-muted"></i>
-            Снять обязательность
+            {{ 'AttributeGrid.commands.disableRequired' | translate }}
           </button>
           <button class="btn btn-danger"
                   type="button"
                   ng-disabled="!selectedItems.length"
                   ng-click="bulkDelete()">
             <i class="fa fa-trash"></i>
-            В корзину
+            {{ 'AttributeGrid.commands.deleteSelected' | translate }}
           </button>
         </div>
 
         <div style="color: #666;">
-          Найдено: <strong>{{pageSettings.totalItems}}</strong>
+          <span ng-if="selectedItems.length" class="text-primary">
+            <i class="fa fa-check-square"></i>
+            {{ 'AttributeGrid.blades.list.selected' | translate }}: <strong>{{selectedItems.length}}</strong> |
+          </span>
+          {{ 'AttributeGrid.blades.list.total' | translate }}: <strong>{{pageSettings.totalItems}}</strong>
         </div>
       </div>
 
@@ -93,12 +97,12 @@
                        ng-checked="selectAll"
                        ng-click="toggleSelectAll()">
               </th>
-              <th>Имя</th>
-              <th style="width: 120px;">Тип</th>
-              <th>Владелец</th>
-              <th style="width: 70px; text-align: center;">Фильтр</th>
-              <th style="width: 70px; text-align: center;">Словарь</th>
-              <th style="width: 60px; text-align: right;">Исп.</th>
+              <th>{{ 'AttributeGrid.blades.list.columns.name' | translate }}</th>
+              <th style="width: 120px;">{{ 'AttributeGrid.blades.list.columns.type' | translate }}</th>
+              <th>{{ 'AttributeGrid.blades.list.columns.owner' | translate }}</th>
+              <th style="width: 70px; text-align: center;">{{ 'AttributeGrid.blades.list.columns.filterable' | translate }}</th>
+              <th style="width: 70px; text-align: center;">{{ 'AttributeGrid.blades.list.columns.dictionary' | translate }}</th>
+              <th style="width: 60px; text-align: right;">{{ 'AttributeGrid.blades.list.columns.usage' | translate }}</th>
               <th style="width: 50px;"></th>
             </tr>
           </thead>
@@ -132,10 +136,10 @@
                    ng-class="item.isFilterable ? 'fa-check text-success' : 'fa-times text-muted'"
                    ng-click="toggleFilterable(item, $event)"
                    style="cursor: pointer;"
-                   title="Кликните для переключения"></i>
+                   title="{{ 'AttributeGrid.blades.list.toggleFilterable' | translate }}"></i>
               </td>
               <td style="text-align: center;">
-                <i class="fa fa-book text-info" ng-if="item.isDictionary" title="Словарь"></i>
+                <i class="fa fa-book text-info" ng-if="item.isDictionary" title="{{ 'AttributeGrid.blades.list.columns.dictionary' | translate }}"></i>
                 <span ng-if="!item.isDictionary">—</span>
               </td>
               <td style="text-align: right;">
@@ -144,7 +148,7 @@
               <td>
                 <button class="btn btn-xs btn-danger"
                         ng-click="deleteItem(item); $event.stopPropagation();"
-                        title="Удалить в корзину">
+                        title="{{ 'AttributeGrid.commands.deleteSelected' | translate }}">
                   <i class="fa fa-trash"></i>
                 </button>
               </td>
@@ -153,7 +157,7 @@
             <tr ng-if="!blade.isLoading && (!blade.currentEntities || blade.currentEntities.length === 0)">
               <td colspan="8" class="text-center text-muted" style="padding: 40px;">
                 <i class="fa fa-inbox fa-2x"></i>
-                <p style="margin-top: 10px;">Атрибуты не найдены</p>
+                <p style="margin-top: 10px;">{{ 'AttributeGrid.blades.list.empty' | translate }}</p>
               </td>
             </tr>
           </tbody>

@@ -1,0 +1,81 @@
+{
+  "AttributeGrid": {
+    "blades": {
+      "attribute-grid": {
+        "title": "Менеджер атрибутов"
+      },
+      "list": {
+        "title": "Менеджер атрибутов",
+        "selected": "Выбрано",
+        "total": "Всего",
+        "empty": "Атрибуты не найдены",
+        "toggleFilterable": "Кликните для переключения",
+        "placeholders": {
+          "search": "Поиск по имени...",
+          "allCatalogs": "— Все каталоги —",
+          "allTypes": "— Все типы —"
+        },
+        "valueTypes": {
+          "shortText": "Текст",
+          "longText": "Длинный текст",
+          "number": "Число",
+          "dateTime": "Дата",
+          "boolean": "Да/Нет"
+        },
+        "columns": {
+          "name": "Имя",
+          "type": "Тип",
+          "owner": "Владелец",
+          "filterable": "Фильтр",
+          "dictionary": "Словарь",
+          "usage": "Исп."
+        }
+      },
+      "detail": {
+        "title": "Редактирование атрибута",
+        "newTitle": "Новый атрибут"
+      },
+      "trash": {
+        "title": "Корзина",
+        "subtitle": "Удалённые атрибуты"
+      }
+    },
+    "commands": {
+      "enableFilter": "Сделать фильтруемыми",
+      "disableFilter": "Снять фильтр",
+      "enableRequired": "Сделать обязательными",
+      "disableRequired": "Снять обязательность",
+      "deleteSelected": "В корзину",
+      "trash": "Корзина"
+    },
+    "dialogs": {
+      "delete": {
+        "title": "Удаление атрибута",
+        "message": "Удалить атрибут \"{{name}}\" в корзину?"
+      },
+      "bulkUpdate": {
+        "title": "Массовое обновление",
+        "message": "Применить изменения к выбранным атрибутам?"
+      },
+      "bulkDelete": {
+        "title": "Массовое удаление",
+        "message": "Удалить {{count}} атрибутов в корзину?"
+      }
+    }
+  },
+  "permissions": {
+    "attribute-grid:access": "Доступ к меню менеджера атрибутов",
+    "attribute-grid:create": "Создание атрибутов",
+    "attribute-grid:read": "Просмотр атрибутов",
+    "attribute-grid:update": "Обновление атрибутов",
+    "attribute-grid:delete": "Удаление атрибутов"
+  },
+  "settings": {
+    "AttributeGrid": {
+      "Enabled": {
+        "title": "Менеджер атрибутов включён",
+        "description": "Флаг включения менеджера атрибутов"
+      }
+    }
+  }
+}

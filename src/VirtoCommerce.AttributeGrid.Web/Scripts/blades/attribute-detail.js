@@ -3,7 +3,8 @@ angular.module('VirtoCommerce.AttributeGrid')
         '$scope',
         'VirtoCommerce.AttributeGrid.webApi',
         'platformWebApp.bladeNavigationService',
-        function ($scope, api, bladeNavigationService) {
+        '$translate',
+        function ($scope, api, bladeNavigationService, $translate) {
             var blade = $scope.blade;
             blade.headIcon = 'fa fa-tag';
             blade.updatePermission = 'attribute-grid:update';
@@ -12,7 +13,7 @@ angular.module('VirtoCommerce.AttributeGrid')
 
             blade.refresh = function () {
                 if (!blade.currentEntityId) {
-                    blade.title = 'Новый атрибут';
+                    blade.title = $translate.instant('AttributeGrid.blades.detail.newTitle');
                     blade.currentEntity = {
                         name: '',
                         code: '',

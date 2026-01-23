@@ -308,6 +308,27 @@ public class AttributeGridController : Controller
     }
 
     /// <summary>
+    /// Bulk update property flags (legacy payload).
+    /// </summary>
+    [HttpPost]
+    [Route("bulk-update")]
+    [Authorize(Permissions.Update)]
+    public async Task<ActionResult> BulkUpdate([FromBody] BulkPropertyUpdateRequest request)
+    {
+        if (request?.PropertyIds == null || request.PropertyIds.Length == 0)
+        {
+            return Ok(new { updated = 0 });
+        }
+
+        foreach (var id in request.PropertyIds)
+        {
+            await _propertyManagerService.UpdatePropertyAsync(id, request.IsFilterable, request.IsRequired);
+        }
+
+        return Ok(new { updated = request.PropertyIds.Length });
+    }
+
+    /// <summary>
     /// Bulk move properties to trash.
     /// </summary>
     [HttpPost]
@@ -326,6 +347,27 @@ public class AttributeGridController : Controller
         }
 
         return Ok(new { deleted = request.Ids.Count });
+    }
+
+    /// <summary>
+    /// Bulk move properties to trash (legacy payload).
+    /// </summary>
+    [HttpPost]
+    [Route("bulk-delete")]
+    [Authorize(Permissions.Delete)]
+    public async Task<ActionResult> BulkDelete([FromBody] BulkPropertyDeleteRequest request)
+    {
+        if (request?.PropertyIds == null || request.PropertyIds.Length == 0)
+        {
+            return Ok(new { deleted = 0 });
+        }
+
+        foreach (var id in request.PropertyIds)
+        {
+            await _propertyTrashService.MoveToTrashAsync(id, User?.Identity?.Name);
+        }
+
+        return Ok(new { deleted = request.PropertyIds.Length });
     }
 
     [HttpGet]
@@ -395,4 +437,16 @@ public class BulkUpdateRequest
 public class BulkDeleteRequest
 {
     public List<string> Ids { get; set; } = new();
+}
+
+public class BulkPropertyUpdateRequest
+{
+    public string[] PropertyIds { get; set; }
+    public bool? IsFilterable { get; set; }
+    public bool? IsRequired { get; set; }
+}
+
+public class BulkPropertyDeleteRequest
+{
+    public string[] PropertyIds { get; set; }
 }
