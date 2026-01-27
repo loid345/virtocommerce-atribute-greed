@@ -63,7 +63,7 @@ public class PropertyTrashService : IPropertyTrashService
             Id = Guid.NewGuid().ToString(),
             PropertyId = propertyId,
             PropertyName = property.Name,
-            PropertyCode = property.Code,
+            PropertyCode = string.IsNullOrWhiteSpace(property.Code) ? property.Name : property.Code,
             CatalogId = property.CatalogId,
             CategoryId = property.CategoryId,
             PropertyDataJson = JsonSerializer.Serialize(property),
