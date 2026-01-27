@@ -3,8 +3,8 @@
   <!-- These properties will be shared for all projects -->
   <PropertyGroup>
     <ModuleVersion Condition=" '$(ModuleVersion)' == '' ">3.0.0</ModuleVersion>
-    <PlatformVersion Condition=" '$(PlatformVersion)' == '' ">3.0.0</PlatformVersion>
-    <CatalogVersion Condition=" '$(CatalogVersion)' == '' ">3.0.0</CatalogVersion>
+    <PlatformVersion Condition=" '$(PlatformVersion)' == '' ">3.832.17</PlatformVersion>
+    <CatalogVersion Condition=" '$(CatalogVersion)' == '' ">3.912.0</CatalogVersion>
     <VersionPrefix>$(ModuleVersion)</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <VersionSuffix Condition=" '$(VersionSuffix)' != '' AND '$(BuildNumber)' != '' ">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
