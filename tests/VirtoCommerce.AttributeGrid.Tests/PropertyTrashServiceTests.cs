@@ -36,7 +36,7 @@ public class PropertyTrashServiceTests
         };
 
         mockPropertyService
-            .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>(), null))
+            .Setup(x => x.GetByIdsAsync(It.IsAny<string[]>()))
             .ReturnsAsync(new[] { testProperty });
 
         mockPropertyService
