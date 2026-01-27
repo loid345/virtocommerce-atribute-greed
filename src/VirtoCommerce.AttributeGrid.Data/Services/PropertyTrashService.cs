@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using VirtoCommerce.AttributeGrid.Core;
 using VirtoCommerce.AttributeGrid.Core.Models;
 using VirtoCommerce.AttributeGrid.Core.Services;
 using VirtoCommerce.AttributeGrid.Data.Models;
@@ -58,12 +59,15 @@ public class PropertyTrashService : IPropertyTrashService
             return;
         }
 
+        var propertyCode = CatalogModuleHelper.GetCode(property);
         var trashEntry = new PropertyTrashEntity
         {
             Id = Guid.NewGuid().ToString(),
             PropertyId = propertyId,
             PropertyName = property.Name,
-            PropertyCode = string.IsNullOrWhiteSpace(property.Code) ? property.Name : property.Code,
+            PropertyCode = string.IsNullOrWhiteSpace(propertyCode)
+                ? property.Name
+                : propertyCode,
             CatalogId = property.CatalogId,
             CategoryId = property.CategoryId,
             PropertyDataJson = JsonSerializer.Serialize(property),

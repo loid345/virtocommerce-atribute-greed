@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VirtoCommerce.AttributeGrid.Core;
 using VirtoCommerce.AttributeGrid.Core.Models;
 using VirtoCommerce.AttributeGrid.Core.Services;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -94,7 +95,7 @@ public class AttributeGridController : Controller
                 continue;
             }
 
-            if (criteria.IsFilterable.HasValue && property.IsFilterable != criteria.IsFilterable.Value)
+            if (criteria.IsFilterable.HasValue && CatalogModuleHelper.GetIsFilterable(property) != criteria.IsFilterable.Value)
             {
                 continue;
             }
@@ -121,12 +122,15 @@ public class AttributeGridController : Controller
             .Distinct()
             .ToArray();
 
-        var catalogs = catalogIds.Length == 0
-            ? Array.Empty<Catalog>()
-            : await _catalogService.GetByIdsAsync(catalogIds, CatalogResponseGroup.Info.ToString());
-        var categories = categoryIds.Length == 0
-            ? Array.Empty<Category>()
-            : await _categoryService.GetByIdsAsync(categoryIds, CategoryResponseGroup.Info.ToString());
+        var catalogs = await CatalogModuleHelper.GetCatalogsAsync(
+            _catalogService,
+            catalogIds,
+            CatalogResponseGroup.Info.ToString());
+        var categories = await CatalogModuleHelper.GetCategoriesAsync(
+            _categoryService,
+            categoryIds,
+            criteria.CatalogId,
+            CategoryResponseGroup.Info.ToString());
 
         var catalogMap = catalogs.ToDictionary(x => x.Id, x => x.Name, StringComparer.OrdinalIgnoreCase);
         var categoryMap = categories.ToDictionary(x => x.Id, x => x, StringComparer.OrdinalIgnoreCase);
@@ -139,16 +143,16 @@ public class AttributeGridController : Controller
             {
                 Id = property.Id,
                 Name = property.Name,
-                Code = property.Name,
+                Code = CatalogModuleHelper.GetCode(property) ?? property.Name,
                 ValueType = property.ValueType.ToString(),
                 PropertyType = property.Type.ToString(),
                 CatalogId = property.CatalogId,
                 CatalogName = GetCatalogName(property.CatalogId, catalogMap),
                 CategoryId = property.CategoryId,
                 OwnerPath = ownerPath,
-                IsFilterable = property.IsFilterable,
+                IsFilterable = CatalogModuleHelper.GetIsFilterable(property),
                 IsDictionary = property.Dictionary,
-                IsRequired = property.IsRequired,
+                IsRequired = CatalogModuleHelper.GetIsRequired(property),
                 IsMultivalue = property.Multivalue,
                 UsageCount = 0,
             };
@@ -288,8 +292,8 @@ public class AttributeGridController : Controller
             property.Type = propertyType;
         }
 
-        property.IsFilterable = item.IsFilterable;
-        property.IsRequired = item.IsRequired;
+        CatalogModuleHelper.SetIsFilterable(property, item.IsFilterable);
+        CatalogModuleHelper.SetIsRequired(property, item.IsRequired);
         property.Multivalue = item.IsMultivalue;
         property.Dictionary = item.IsDictionary;
 

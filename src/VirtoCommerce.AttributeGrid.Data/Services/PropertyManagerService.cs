@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VirtoCommerce.AttributeGrid.Core;
 using VirtoCommerce.AttributeGrid.Core.Models;
 using VirtoCommerce.AttributeGrid.Core.Services;
 using VirtoCommerce.CatalogModule.Core.Model;
@@ -76,7 +77,7 @@ public class PropertyManagerService : IPropertyManagerService
                 continue;
             }
 
-            if (criteria.IsFilterable.HasValue && property.IsFilterable != criteria.IsFilterable.Value)
+            if (criteria.IsFilterable.HasValue && CatalogModuleHelper.GetIsFilterable(property) != criteria.IsFilterable.Value)
             {
                 continue;
             }
@@ -126,12 +127,12 @@ public class PropertyManagerService : IPropertyManagerService
 
         if (isFilterable.HasValue)
         {
-            property.IsFilterable = isFilterable.Value;
+            CatalogModuleHelper.SetIsFilterable(property, isFilterable.Value);
         }
 
         if (isRequired.HasValue)
         {
-            property.IsRequired = isRequired.Value;
+            CatalogModuleHelper.SetIsRequired(property, isRequired.Value);
         }
 
         await _propertyService.SaveChangesAsync(new[] { property });
@@ -143,14 +144,14 @@ public class PropertyManagerService : IPropertyManagerService
         {
             Id = property.Id,
             Name = property.Name,
-            Code = property.Name,
+            Code = CatalogModuleHelper.GetCode(property) ?? property.Name,
             ValueType = property.ValueType.ToString(),
             PropertyType = property.Type.ToString(),
             CatalogId = property.CatalogId,
             CategoryId = property.CategoryId,
-            IsFilterable = property.IsFilterable,
+            IsFilterable = CatalogModuleHelper.GetIsFilterable(property),
             IsDictionary = property.Dictionary,
-            IsRequired = property.IsRequired,
+            IsRequired = CatalogModuleHelper.GetIsRequired(property),
             IsMultivalue = property.Multivalue,
             UsageCount = 0,
         };
@@ -169,7 +170,8 @@ public class PropertyManagerService : IPropertyManagerService
 
         if (!string.IsNullOrEmpty(property.CatalogId))
         {
-            var catalogs = await _catalogService.GetByIdsAsync(
+            var catalogs = await CatalogModuleHelper.GetCatalogsAsync(
+                _catalogService,
                 new[] { property.CatalogId },
                 CatalogResponseGroup.Info.ToString());
 
@@ -183,8 +185,10 @@ public class PropertyManagerService : IPropertyManagerService
 
         if (!string.IsNullOrEmpty(property.CategoryId))
         {
-            var categories = await _categoryService.GetByIdsAsync(
+            var categories = await CatalogModuleHelper.GetCategoriesAsync(
+                _categoryService,
                 new[] { property.CategoryId },
+                property.CatalogId,
                 CategoryResponseGroup.Info.ToString());
 
             var category = categories.FirstOrDefault();
