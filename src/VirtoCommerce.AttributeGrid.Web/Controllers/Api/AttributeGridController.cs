@@ -8,10 +8,10 @@ using VirtoCommerce.AttributeGrid.Core;
 using VirtoCommerce.AttributeGrid.Core.Models;
 using VirtoCommerce.AttributeGrid.Core.Services;
 using VirtoCommerce.CatalogModule.Core.Model;
-using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using Permissions = VirtoCommerce.AttributeGrid.Core.ModuleConstants.Security.Permissions;
+using CatalogPropertySearchCriteria = VirtoCommerce.CatalogModule.Core.Model.Search.PropertySearchCriteria;
 
 namespace VirtoCommerce.AttributeGrid.Web.Controllers.Api;
 
@@ -304,11 +304,11 @@ public class AttributeGridController : Controller
                 property.Id = Guid.NewGuid().ToString();
             }
 
-            await _propertyService.CreateAsync(new[] { property });
+            await CatalogModuleHelper.SavePropertyAsync(_propertyService, property, true);
         }
         else
         {
-            await _propertyService.SaveChangesAsync(new[] { property });
+            await CatalogModuleHelper.SavePropertyAsync(_propertyService, property, false);
         }
 
         return Ok(property);

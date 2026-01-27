@@ -181,6 +181,47 @@ public static class CatalogModuleHelper
         return Array.Empty<Category>();
     }
 
+    public static async Task SavePropertyAsync(IPropertyService propertyService, Property property, bool isNew)
+    {
+        if (propertyService == null || property == null)
+        {
+            return;
+        }
+
+        var serviceType = propertyService.GetType();
+        var payload = new[] { property };
+
+        if (isNew)
+        {
+            var createWithList = serviceType.GetMethod("CreateAsync", new[] { typeof(IList<Property>) });
+            if (createWithList != null)
+            {
+                await InvokeAsync<object>(propertyService, createWithList, new object[] { payload });
+                return;
+            }
+
+            var createWithEnumerable = serviceType.GetMethod("CreateAsync", new[] { typeof(IEnumerable<Property>) });
+            if (createWithEnumerable != null)
+            {
+                await InvokeAsync<object>(propertyService, createWithEnumerable, new object[] { payload });
+                return;
+            }
+        }
+
+        var saveWithList = serviceType.GetMethod("SaveChangesAsync", new[] { typeof(IList<Property>) });
+        if (saveWithList != null)
+        {
+            await InvokeAsync<object>(propertyService, saveWithList, new object[] { payload });
+            return;
+        }
+
+        var saveWithEnumerable = serviceType.GetMethod("SaveChangesAsync", new[] { typeof(IEnumerable<Property>) });
+        if (saveWithEnumerable != null)
+        {
+            await InvokeAsync<object>(propertyService, saveWithEnumerable, new object[] { payload });
+        }
+    }
+
     private static bool GetBooleanProperty(object target, params string[] propertyNames)
     {
         var propertyInfo = GetPropertyInfo(target, propertyNames);
