@@ -13,9 +13,7 @@ on:
 
 jobs:
   test:
-    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.800.24
-    secrets:
-      sonarToken: ${{ secrets.SONAR_TOKEN }}
+    uses: VirtoCommerce/.github/.github/workflows/test.yml@v3.800.24
 
   build:
     uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.800.24    

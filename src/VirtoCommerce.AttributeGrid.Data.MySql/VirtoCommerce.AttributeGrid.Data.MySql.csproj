@@ -14,7 +14,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageReference Include="VirtoCommerce.Platform.Data.MySql" Version="{PlatformVersion}" />
+    <PackageReference Include="VirtoCommerce.Platform.Data.MySql" Version="$(PlatformVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.AttributeGrid.Data\VirtoCommerce.AttributeGrid.Data.csproj" />

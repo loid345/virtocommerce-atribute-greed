@@ -15,19 +15,17 @@ namespace VirtoCommerce.AttributeGrid.Tests;
 [Trait("Category", "Unit")]
 public class PropertyTrashServiceTests
 {
-    private static AttributeGridDbContext CreateInMemoryContext()
+    private static DbContextOptions<AttributeGridDbContext> CreateInMemoryOptions()
     {
-        var options = new DbContextOptionsBuilder<AttributeGridDbContext>()
+        return new DbContextOptionsBuilder<AttributeGridDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-
-        return new AttributeGridDbContext(options);
     }
 
     [Fact]
     public async Task MoveToTrash_ShouldCreateTrashEntry()
     {
-        var context = CreateInMemoryContext();
+        var options = CreateInMemoryOptions();
         var mockPropertyService = new Mock<IPropertyService>();
 
         var testProperty = new Property
@@ -46,12 +44,13 @@ public class PropertyTrashServiceTests
             .Returns(Task.CompletedTask);
 
         var service = new PropertyTrashService(
-            () => context,
+            () => new AttributeGridDbContext(options),
             mockPropertyService.Object);
 
         await service.MoveToTrashAsync("prop-123", "admin");
 
-        var trashEntries = await context.PropertyTrashEntries.ToListAsync();
+        await using var verificationContext = new AttributeGridDbContext(options);
+        var trashEntries = await verificationContext.PropertyTrashEntries.ToListAsync();
         Assert.Single(trashEntries);
         Assert.Equal("prop-123", trashEntries[0].PropertyId);
         Assert.Equal("Test Property", trashEntries[0].PropertyName);
@@ -61,7 +60,8 @@ public class PropertyTrashServiceTests
     [Fact]
     public async Task GetTrashEntries_ShouldNotReturnExpired()
     {
-        var context = CreateInMemoryContext();
+        var options = CreateInMemoryOptions();
+        await using var context = new AttributeGridDbContext(options);
 
         context.PropertyTrashEntries.Add(new PropertyTrashEntity
         {
@@ -84,7 +84,7 @@ public class PropertyTrashServiceTests
         await context.SaveChangesAsync();
 
         var mockPropertyService = new Mock<IPropertyService>();
-        var service = new PropertyTrashService(() => context, mockPropertyService.Object);
+        var service = new PropertyTrashService(() => new AttributeGridDbContext(options), mockPropertyService.Object);
 
         var result = await service.GetTrashEntriesAsync();
 
@@ -95,7 +95,8 @@ public class PropertyTrashServiceTests
     [Fact]
     public async Task RestoreFromTrash_ShouldRemoveFromTrash()
     {
-        var context = CreateInMemoryContext();
+        var options = CreateInMemoryOptions();
+        await using var context = new AttributeGridDbContext(options);
 
         context.PropertyTrashEntries.Add(new PropertyTrashEntity
         {
@@ -114,11 +115,12 @@ public class PropertyTrashServiceTests
             .Setup(x => x.SaveChangesAsync(It.IsAny<Property[]>()))
             .Returns(Task.CompletedTask);
 
-        var service = new PropertyTrashService(() => context, mockPropertyService.Object);
+        var service = new PropertyTrashService(() => new AttributeGridDbContext(options), mockPropertyService.Object);
 
         await service.RestoreFromTrashAsync("trash-1");
 
-        var remaining = await context.PropertyTrashEntries.ToListAsync();
+        await using var verificationContext = new AttributeGridDbContext(options);
+        var remaining = await verificationContext.PropertyTrashEntries.ToListAsync();
         Assert.Empty(remaining);
         mockPropertyService.Verify(x => x.SaveChangesAsync(It.IsAny<Property[]>()), Times.Once);
     }
