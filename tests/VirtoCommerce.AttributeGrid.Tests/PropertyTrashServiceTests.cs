@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +41,7 @@ public class PropertyTrashServiceTests
             .ReturnsAsync(new[] { testProperty });
 
         mockPropertyService
-            .Setup(x => x.DeleteAsync(It.IsAny<string[]>()))
+            .Setup(x => x.DeleteAsync(It.IsAny<IList<string>>(), It.IsAny<string>()))
             .Returns(Task.CompletedTask);
 
         var service = new PropertyTrashService(
