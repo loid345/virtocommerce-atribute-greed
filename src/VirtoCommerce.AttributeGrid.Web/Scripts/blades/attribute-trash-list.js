@@ -2,8 +2,9 @@ angular.module('VirtoCommerce.AttributeGrid')
     .controller('VirtoCommerce.AttributeGrid.attributeTrashListController', [
         '$scope',
         'VirtoCommerce.AttributeGrid.webApi',
+        'platformWebApp.bladeNavigationService',
         '$translate',
-        function ($scope, api, $translate) {
+        function ($scope, api, bladeNavigationService, $translate) {
             var blade = $scope.blade;
             blade.title = $translate.instant('AttributeGrid.blades.trash.title');
             blade.headIcon = 'fa fa-trash';
@@ -24,6 +25,10 @@ angular.module('VirtoCommerce.AttributeGrid')
                     if (blade.parentBlade && blade.parentBlade.refresh) {
                         blade.parentBlade.refresh();
                     }
+                }, function (error) {
+                    bladeNavigationService.setError(
+                        $translate.instant('AttributeGrid.messages.updateError', { status: error.status }),
+                        blade);
                 });
             };
 

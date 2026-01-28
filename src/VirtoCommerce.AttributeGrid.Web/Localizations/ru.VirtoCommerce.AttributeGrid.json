@@ -112,7 +112,8 @@
       "codeExists": "Код атрибута \"{{code}}\" уже существует.",
       "saveError": "Ошибка сохранения: {{status}}",
       "loadError": "Ошибка загрузки: {{status}}",
-      "deleteError": "Ошибка удаления: {{status}}"
+      "deleteError": "Ошибка удаления: {{status}}",
+      "updateError": "Ошибка обновления: {{status}}"
     },
     "common": {
       "yes": "Да",
