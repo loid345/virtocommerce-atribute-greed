@@ -41,7 +41,7 @@ public class PropertyTrashServiceTests
             .ReturnsAsync(new[] { testProperty });
 
         mockPropertyService
-            .Setup(x => x.DeleteAsync(It.IsAny<IList<string>>(), It.IsAny<string>()))
+            .Setup(x => x.DeleteAsync(It.IsAny<IList<string>>(), It.IsAny<bool>()))
             .Returns(Task.CompletedTask);
 
         var service = new PropertyTrashService(
