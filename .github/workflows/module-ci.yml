@@ -180,7 +180,7 @@ jobs:
           fi;
 
       - name: Create deployment matrix
-        if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
+        if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
         uses: VirtoCommerce/vc-github-actions/cloud-create-deploy-matrix@master
         id: deployment-matrix
         with:
@@ -297,7 +297,10 @@ jobs:
           echo "Jira Upload Build Info response: ${{ steps.push_build_info_to_jira.outputs.response }}"
 
   ui-auto-tests:
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' }}
+    if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request')
+      && needs.ci.outputs.run-ui-tests == 'true'
+      && needs.ci.outputs.moduleId != ''
+      && needs.ci.outputs.artifactUrl != '' }}
     needs: 'ci'
     uses: VirtoCommerce/.github/.github/workflows/ui-autotests.yml@v3.800.24
     with:
@@ -314,8 +317,10 @@ jobs:
       sendgridApiKey: ${{ secrets.SENDGRID_APIKEY_4E2E_AUTOTESTS }}
 
   module-katalon-tests:
-    if: ${{ ((github.event_name == 'push') && (needs.ci.outputs.run-e2e == 'true')) ||
-        (github.event_name == 'workflow_dispatch') || (github.event_name == 'pull_request') }}
+    if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request')
+      && needs.ci.outputs.run-e2e == 'true'
+      && needs.ci.outputs.moduleId != ''
+      && needs.ci.outputs.artifactUrl != '' }}
     needs: 'ci'
     uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.24
     with:
@@ -335,7 +340,8 @@ jobs:
 
   deploy-cloud:
     if: ${{ (github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch')
-      && needs.ci.outputs.deployment-folder-exists == 'true'}}
+      && needs.ci.outputs.deployment-folder-exists == 'true'
+      && needs.ci.outputs.matrix != ''}}
     needs: ci
     uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.24
     with:
