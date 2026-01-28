@@ -321,7 +321,8 @@ jobs:
           echo "Jira Upload Build Info response: ${{ steps.push_build_info_to_jira.outputs.response }}"
 
   ui-auto-tests:
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && secrets.REPO_TOKEN != '' && secrets.VC_TESTING_MODULE_ENV_FILE != '') }}
     needs: 'ci'
     uses: VirtoCommerce/.github/.github/workflows/ui-autotests.yml@v3.800.24
     with:
@@ -337,8 +338,19 @@ jobs:
       testSecretEnvFile: ${{ secrets.VC_TESTING_MODULE_ENV_FILE }}
       sendgridApiKey: ${{ secrets.SENDGRID_APIKEY_4E2E_AUTOTESTS }}
 
+  ui-auto-tests-pr:
+    name: ui-auto-tests
+    if: ${{ github.event_name == 'pull_request' && (secrets.REPO_TOKEN == '' || secrets.VC_TESTING_MODULE_ENV_FILE == '') }}
+    needs: 'ci'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Report missing secrets
+        run: |
+          echo "UI auto tests require repository secrets that are not available for this pull request."
+
   module-katalon-tests:
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && secrets.REPO_TOKEN != '' && secrets.KATALON_API_KEY != '') }}
     needs: 'ci'
     uses: VirtoCommerce/.github/.github/workflows/e2e.yml@v3.800.24
     with:
@@ -355,6 +367,16 @@ jobs:
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}
       katalonApiKey: ${{ secrets.KATALON_API_KEY }}
+
+  module-katalon-tests-pr:
+    name: module-katalon-tests
+    if: ${{ github.event_name == 'pull_request' && (secrets.REPO_TOKEN == '' || secrets.KATALON_API_KEY == '') }}
+    needs: 'ci'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Report missing secrets
+        run: |
+          echo "Katalon tests require repository secrets that are not available for this pull request."
 
   deploy-cloud-push:
     name: deploy-cloud
