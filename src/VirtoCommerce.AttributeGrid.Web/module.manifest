@@ -2,7 +2,7 @@
 <module>
   <id>VirtoCommerce.AttributeGrid</id>
   <version>{ModuleVersion}</version>
-  <version-tag>{VersionSuffix}</version-tag>
+  <version-tag>{VersionTag}</version-tag>
 
   <platformVersion>{PlatformVersion}</platformVersion>
   <dependencies>

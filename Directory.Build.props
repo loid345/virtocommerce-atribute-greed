@@ -8,6 +8,8 @@
     <VersionPrefix>$(ModuleVersion)</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <VersionSuffix Condition=" '$(VersionSuffix)' != '' AND '$(BuildNumber)' != '' ">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
+    <VersionTag></VersionTag>
+    <VersionTag Condition=" '$(VersionSuffix)' != '' ">$(ModuleVersion)-$(VersionSuffix)</VersionTag>
   </PropertyGroup>
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
