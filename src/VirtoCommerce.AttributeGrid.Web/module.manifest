@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module>
   <id>VirtoCommerce.AttributeGrid</id>
-  <version>{ModuleVersion}</version>
-  <version-tag>{ModuleVersion}-{VersionSuffix}</version-tag>
+  <version>3.0.0</version>
+  <version-tag>3.0.0-local</version-tag>
 
-  <platformVersion>{PlatformVersion}</platformVersion>
+  <platformVersion>3.917.0</platformVersion>
   <dependencies>
-    <dependency id="VirtoCommerce.Catalog" version="{CatalogVersion}" />
+    <dependency id="VirtoCommerce.Catalog" version="3.912.0" />
   </dependencies>
 
   <title>Attribute Grid</title>
