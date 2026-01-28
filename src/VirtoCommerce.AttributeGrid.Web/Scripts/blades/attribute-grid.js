@@ -152,7 +152,7 @@ angular.module('VirtoCommerce.AttributeGrid')
 
             $scope.bulkUpdate = function (updatePayload) {
                 var ids = getSelectedIds();
-                if (!ids.length) {
+                if (!ids.length || !updatePayload) {
                     return;
                 }
 
@@ -172,6 +172,11 @@ angular.module('VirtoCommerce.AttributeGrid')
                             isRequired: updatePayload.isRequired,
                         }, function () {
                             blade.refresh();
+                        }, function (error) {
+                            blade.isLoading = false;
+                            bladeNavigationService.setError(
+                                $translate.instant('AttributeGrid.messages.updateError', { status: error.status }),
+                                blade);
                         });
                     },
                 };
@@ -216,8 +221,13 @@ angular.module('VirtoCommerce.AttributeGrid')
                     $event.stopPropagation();
                 }
 
-                api.update({ id: item.id }, { isFilterable: !item.isFilterable }, function () {
-                    item.isFilterable = !item.isFilterable;
+                var newValue = !item.isFilterable;
+                api.update({ id: item.id }, { isFilterable: newValue }, function () {
+                    item.isFilterable = newValue;
+                }, function (error) {
+                    bladeNavigationService.setError(
+                        $translate.instant('AttributeGrid.messages.updateError', { status: error.status }),
+                        blade);
                 });
             };
 

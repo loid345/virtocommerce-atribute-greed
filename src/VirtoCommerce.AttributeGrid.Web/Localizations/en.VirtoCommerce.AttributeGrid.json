@@ -112,7 +112,8 @@
       "codeExists": "Attribute code \"{{code}}\" already exists.",
       "saveError": "Save failed: {{status}}",
       "loadError": "Load failed: {{status}}",
-      "deleteError": "Delete failed: {{status}}"
+      "deleteError": "Delete failed: {{status}}",
+      "updateError": "Update failed: {{status}}"
     },
     "common": {
       "yes": "Yes",
