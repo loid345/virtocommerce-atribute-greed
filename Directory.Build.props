@@ -6,7 +6,7 @@
     <PlatformVersion Condition=" '$(PlatformVersion)' == '' ">3.917.0</PlatformVersion>
     <CatalogVersion Condition=" '$(CatalogVersion)' == '' ">3.912.0</CatalogVersion>
     <VersionPrefix>$(ModuleVersion)</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <VersionSuffix>local</VersionSuffix>
     <VersionSuffix Condition=" '$(VersionSuffix)' != '' AND '$(BuildNumber)' != '' ">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
   </PropertyGroup>
   <PropertyGroup>
